@@ -1,0 +1,74 @@
+<!doctype html><meta charset="utf-8"><title>Gerar CLIP</title>
+<body style="font:14px sans-serif"><h3>Gera public/data/clip-textos.json e testa o reconhecimento no aparelho</h3><ol id="out"></ol>
+<script type="module">
+// Uso: rode servir-local.ps1 e abra http://localhost:3000/testes/gerar-clip.html
+// Rode de novo sempre que mudar testes/clip-prompts.json ou adicionar resíduos.
+import { AutoTokenizer, CLIPTextModelWithProjection, AutoProcessor, CLIPVisionModelWithProjection, RawImage } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2";
+const MODELO = "Xenova/mobileclip_s0";
+const out = document.getElementById("out");
+const log = (t) => { const li = document.createElement("li"); li.textContent = t; out.appendChild(li); fetch("/__log/" + encodeURIComponent(t.slice(0, 1500))).catch(() => {}); };
+window.addEventListener("error", e => log("ERRO " + e.message));
+window.addEventListener("unhandledrejection", e => log("ERRO " + (e.reason && (e.reason.stack || e.reason.message) || e.reason)));
+const norm = v => { let s = 0; for (const x of v) s += x * x; s = Math.sqrt(s) || 1; return v.map(x => x / s); };
+const dot = (a, b) => { let s = 0; for (let i = 0; i < a.length; i++) s += a[i] * b[i]; return s; };
+
+const t0 = performance.now();
+const prompts = await (await fetch("/testes/clip-prompts.json")).json();
+const ids = Object.keys(prompts).filter(k => !k.startsWith("_c"));
+const tok = await AutoTokenizer.from_pretrained(MODELO);
+const tm = await CLIPTextModelWithProjection.from_pretrained(MODELO);
+log("modelo de texto carregado em " + Math.round(performance.now() - t0) + " ms");
+const emb = {};
+for (const id of ids) {
+  const textos = prompts[id].map(p => "a photo of " + p.replace(/^(a|an) /, "a "));
+  const inp = tok(textos, { padding: "max_length", truncation: true });
+  const { text_embeds } = await tm(inp);
+  const lista = text_embeds.normalize().tolist();
+  const media = norm(lista[0].map((_, i) => lista.reduce((s, v) => s + v[i], 0) / lista.length));
+  emb[id] = media;
+}
+const dim = emb[ids[0]].length;
+log("textos: " + ids.length + " classes, dimensão " + dim);
+// base64 de Float32 para ficar leve
+const f32 = new Float32Array(ids.length * dim); ids.forEach((id, i) => f32.set(emb[id], i * dim));
+const b64 = btoa(String.fromCharCode(...new Uint8Array(f32.buffer).reduce((a, b) => (a.push(b), a), [])));
+const saida = { modelo: MODELO, biblioteca: "@huggingface/transformers@3.0.2", gerado_em: new Date().toISOString().slice(0, 10), dim, ids, emb_b64: b64 };
+const r = await fetch("/__salvar/clip-textos.json", { method: "POST", body: JSON.stringify(saida) });
+log("salvo clip-textos.json: " + r.status + " (" + Math.round(JSON.stringify(saida).length / 1024) + " KB)");
+
+// ---------- Teste com fotos reais de produtos (Open Food Facts) ----------
+const t1 = performance.now();
+const proc = await AutoProcessor.from_pretrained(MODELO);
+const vm = await CLIPVisionModelWithProjection.from_pretrained(MODELO, { dtype: new URLSearchParams(location.search).get("dtype") || "fp16" }); // o mesmo do app
+log("modelo de visão carregado em " + Math.round(performance.now() - t1) + " ms");
+const tam = performance.getEntriesByType("resource").filter(e => /onnx|huggingface|hf\.co/.test(e.name)).map(e => e.name.split("/").slice(-2).join("/") + "=" + Math.round((e.encodedBodySize || e.transferSize || 0) / 1024) + "KB");
+log("arquivos baixados: " + tam.join(" ; "));
+async function classificar(url) {
+  const img = await RawImage.read(url);
+  const { image_embeds } = await vm(await proc(img));
+  const v = image_embeds.normalize().tolist()[0];
+  const logits = ids.map(id => 100 * dot(v, emb[id]));
+  const m = Math.max(...logits); const ex = logits.map(x => Math.exp(x - m)); const s = ex.reduce((a, b) => a + b, 0);
+  return ids.map((id, i) => [id, ex[i] / s]).sort((a, b) => b[1] - a[1]).slice(0, 3);
+}
+const CATS = { "en:sodas": "pet/lata", "en:beers": "vidro/lata", "en:milks": "longavida", "en:yogurts": "pote", "en:chips-and-fries": "salgadinho", "en:canned-tunas": "conserva", "en:biscuits": "salgadinho", "en:mineral-waters": "pet", "en:coffees": "?" };
+const amostras = await fetch("/testes/amostras.json").then(r => r.ok ? r.json() : []).catch(() => []);
+for (const a of amostras) {
+  const t = performance.now();
+  try { const top = await classificar(a.img); log(`[${a.esperado}] ${a.nome}: ${top.map(([i, pr]) => i + " " + Math.round(pr * 100) + "%").join(", ")} (${Math.round(performance.now() - t)} ms)`); }
+  catch (e) { log("falha imagem " + a.nome + ": " + e.message); }
+}
+if (!amostras.length) for (const [cat, esperado] of Object.entries(CATS)) {
+  await new Promise(r => setTimeout(r, 7000)); // a busca do Open Food Facts limita ~10 consultas/min
+  try {
+    const j = await (await fetch(`https://world.openfoodfacts.org/api/v2/search?categories_tags=${cat}&countries_tags=en:brazil&fields=code,product_name,image_front_small_url&page_size=4`)).json();
+    for (const p of (j.products || []).filter(p => p.image_front_small_url).slice(0, 2)) {
+      const t = performance.now();
+      const top = await classificar(p.image_front_small_url);
+      log(`[${esperado}] ${p.product_name || p.code}: ${top.map(([i, pr]) => i + " " + Math.round(pr * 100) + "%").join(", ")} (${Math.round(performance.now() - t)} ms)`);
+    }
+  } catch (e) { log("falha " + cat + ": " + e.message); }
+}
+try { const top = await classificar("/testes/limpinho.jpeg"); log("[_outro] mascote Limpinho: " + top.map(([i, pr]) => i + " " + Math.round(pr * 100) + "%").join(", ")); } catch (e) { log("sem limpinho: " + e.message); }
+log("FIM");
+</script>

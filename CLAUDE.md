@@ -24,7 +24,9 @@ por texto ou foto. Orienta o uso dos serviços existentes do DMLU; não substitu
 
 ## Estrutura atual (substitui a seção acima)
 - `public/index.html` (app), `public/data/*.json`, `api/identificar.mjs` (foto → Claude, Vercel Functions),
-  `vercel.json`. Foto por IA desligada até cadastrar ANTHROPIC_API_KEY na Vercel. Código de barras: Open Food Facts → partes da embalagem → itens da base. Ver README.md.
+  `vercel.json`. Foto: código/QR na foto → Claude (se ANTHROPIC_API_KEY na Vercel) → MobileCLIP no aparelho
+  (`public/data/clip-textos.json`, gerado por `testes/gerar-clip.html` a partir de `testes/clip-prompts.json`).
+  Mascote Limpinho: função `limpinho(pose)` no index.html (poses: cabeca, ola, identificar, dicas, conquistar, pensando, foto, orientar). Código de barras: Open Food Facts → partes da embalagem → itens da base. Ver README.md.
 
 ## Comandos
 - `powershell -ExecutionPolicy Bypass -File .\servir-local.ps1` — servidor local em http://localhost:3000

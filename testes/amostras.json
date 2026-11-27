@@ -1,0 +1,65 @@
+﻿[
+    {
+        "esperado":  "vidro/lata",
+        "nome":  "Itaipava",
+        "code":  "7897395020101",
+        "img":  "https://images.openfoodfacts.org/images/products/789/739/502/0101/front_en.6.200.jpg",
+        "emb":  ""
+    },
+    {
+        "esperado":  "vidro/lata",
+        "nome":  "CERVEJA HEINEKEN LATA 350 ML",
+        "code":  "7896045506873",
+        "img":  "https://images.openfoodfacts.org/images/products/789/604/550/6873/front_en.12.200.jpg",
+        "emb":  ""
+    },
+    {
+        "esperado":  "vidro/lata",
+        "nome":  "Cerveja Pilsen",
+        "code":  "18960457",
+        "img":  "https://images.openfoodfacts.org/images/products/000/001/896/0457/front_pt.10.200.jpg",
+        "emb":  ""
+    },
+    {
+        "esperado":  "salgadinho",
+        "nome":  "Wafers, barras recheadas e tabletes sortidos",
+        "code":  "7622210596413",
+        "img":  "https://images.openfoodfacts.org/images/products/762/221/059/6413/front_pt.21.200.jpg",
+        "emb":  "en:paper"
+    },
+    {
+        "esperado":  "salgadinho",
+        "nome":  "Biscoito doce maizena",
+        "code":  "7896024761651",
+        "img":  "https://images.openfoodfacts.org/images/products/789/602/476/1651/front_en.3.200.jpg",
+        "emb":  ""
+    },
+    {
+        "esperado":  "salgadinho",
+        "nome":  "Wafer recheado com cobertura sabor chocolate",
+        "code":  "7622210575975",
+        "img":  "https://images.openfoodfacts.org/images/products/762/221/057/5975/front_pt.22.200.jpg",
+        "emb":  ""
+    },
+    {
+        "esperado":  "conserva",
+        "nome":  "Milho Em Conserva Knorr Lata 170g",
+        "code":  "7891150058903",
+        "img":  "https://images.openfoodfacts.org/images/products/789/115/005/8903/front_en.5.200.jpg",
+        "emb":  ""
+    },
+    {
+        "esperado":  "conserva",
+        "nome":  "Ervilhas em conserva Olé 280g",
+        "code":  "7891032012207",
+        "img":  "https://images.openfoodfacts.org/images/products/789/103/201/2207/front_en.4.200.jpg",
+        "emb":  ""
+    },
+    {
+        "esperado":  "conserva",
+        "nome":  "Milho Verde em conserva",
+        "code":  "7896041156010",
+        "img":  "https://images.openfoodfacts.org/images/products/789/604/115/6010/front_pt.4.200.jpg",
+        "emb":  "en:metal,en:can,en:canned,en:food-can"
+    }
+]

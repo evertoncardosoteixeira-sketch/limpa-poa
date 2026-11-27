@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>LIMPA!</title>
 <meta name="description" content="LIMPA! Sua IA para educação ambiental — consulte onde e como descartar cada resíduo em Porto Alegre. Projeto Limpa POA.">
-<meta name="theme-color" content="#13573F">
+<meta name="theme-color" content="#185C28">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -15,9 +15,10 @@
 <style>
 /* Layout: app de uma coluna para celular — cabeçalho fixo, busca em destaque, card de resultado, navegação inferior estilo Android. */
 :root{
-  --green:#1E7F5C; --green-deep:#13573F; --amber:#E8A33D; --navy:#102A43;
-  --mint:#E8F3EE; --bg:#F6F8F5; --surface:#FFFFFF; --fg:#14231C; --muted:#5A6B63;
-  --line:#D9E4DD; --chip:#EEF4F0; --onacc:#FFFFFF; --shadow:0 1px 2px rgba(16,42,67,.06),0 6px 20px rgba(16,42,67,.07);
+  /* Paleta do Limpinho: verde-folha + branco, âmbar de destaque */
+  --green:#2A8A3B; --green-deep:#185C28; --leaf:#4CB84F; --amber:#E8A33D; --navy:#102A43;
+  --mint:#EAF5E7; --bg:#F4F9F1; --surface:#FFFFFF; --fg:#15261A; --muted:#58695C;
+  --line:#D6E6D3; --chip:#EDF6EA; --onacc:#FFFFFF; --shadow:0 1px 2px rgba(16,42,67,.06),0 6px 20px rgba(16,42,67,.07);
   --ok:#1E7F5C; --warn:#B86E0A; --bad:#B23A2E;
   --f-display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
   --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
@@ -27,12 +28,12 @@
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --green:#3DBA8A; --green-deep:#2C9A70; --amber:#F0B657; --navy:#BFD3E6;
-  --mint:#14302A; --bg:#0D1613; --surface:#15211C; --fg:#E7F0EB; --muted:#9DB0A6; --line:#26362F; --chip:#1B2A24; --onacc:#06140F;
+  --green:#5CCB62; --green-deep:#1E6B2E; --leaf:#5CCB62; --amber:#F0B657; --navy:#BFD3E6;
+  --mint:#15301A; --bg:#0C160E; --surface:#142218; --fg:#E6F2E7; --muted:#9DB4A0; --line:#25392A; --chip:#1A2C1E; --onacc:#06140A;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); --ok:#3DBA8A; --warn:#F0B657; --bad:#F08A7E; color-scheme:dark }}
 :root[data-theme="dark"]{
-  --green:#3DBA8A; --green-deep:#2C9A70; --amber:#F0B657; --navy:#BFD3E6;
-  --mint:#14302A; --bg:#0D1613; --surface:#15211C; --fg:#E7F0EB; --muted:#9DB0A6; --line:#26362F; --chip:#1B2A24; --onacc:#06140F;
+  --green:#5CCB62; --green-deep:#1E6B2E; --leaf:#5CCB62; --amber:#F0B657; --navy:#BFD3E6;
+  --mint:#15301A; --bg:#0C160E; --surface:#142218; --fg:#E6F2E7; --muted:#9DB4A0; --line:#25392A; --chip:#1A2C1E; --onacc:#06140A;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); --ok:#3DBA8A; --warn:#F0B657; --bad:#F08A7E; color-scheme:dark }
 
 *{box-sizing:border-box}
@@ -55,6 +56,40 @@ h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;min-width:0}
 .brand b{font-family:var(--f-display);font-weight:800;font-size:1.3rem;letter-spacing:-.01em}
 .brand b span{color:#F7C66B}
+.brand .head{width:38px;height:38px;flex:none;background:#EAF5E7;border-radius:12px;display:grid;place-items:center;overflow:hidden}
+.brand .head svg{width:44px;height:44px;margin-top:6px}
+.bang{display:inline-block;width:.42em;height:.9em;vertical-align:-.04em;margin-left:.04em}
+
+/* Limpinho */
+.lp svg{display:block;width:100%;height:auto}
+.hello{display:grid;grid-template-columns:88px 1fr;gap:10px;align-items:end;margin:.6rem 0 1rem}
+.hello .lp{width:88px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25))}
+.bubble{position:relative;background:#fff;color:#15261A;border-radius:18px 18px 18px 4px;padding:10px 13px;font-size:.9rem;line-height:1.35;box-shadow:0 6px 18px rgba(0,0,0,.18);margin-bottom:14px}
+.bubble b{font-family:var(--f-display);color:#185C28;font-size:1.05rem}
+.bubble::before{content:"";position:absolute;left:-8px;bottom:0;border:8px solid transparent;border-right-color:#fff;border-bottom-color:#fff}
+.r-emoji .lp{width:54px}
+.tipbox{display:grid;grid-template-columns:56px 1fr;gap:10px;align-items:center;background:color-mix(in srgb,var(--amber) 16%,var(--surface));border-radius:16px;padding:10px 14px 10px 8px;font-size:.93rem}
+.tipbox .lp{width:56px}
+.tipbox b{display:block;font-family:var(--f-display);font-size:.95rem;margin-bottom:2px}
+.ctx{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ctx button{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:10px 10px 12px;cursor:pointer;display:grid;justify-items:center;text-align:center;gap:2px;box-shadow:var(--shadow)}
+.ctx .lp{width:76px;height:84px;display:grid;place-items:end center}
+.ctx b{font-family:var(--f-display);font-size:1rem}
+.ctx span{font-size:.8rem;color:var(--muted);line-height:1.3}
+.quotes{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.quotes::-webkit-scrollbar{display:none}
+.quotes q{flex:none;max-width:220px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:.88rem;quotes:"\201C" "\201D"}
+.valores{background:var(--green-deep);color:#fff;border-radius:22px;padding:16px;display:grid;gap:12px}
+.valores ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;font-size:.88rem}
+.valores li{display:flex;gap:8px;align-items:center}
+.valores li svg{width:22px;height:22px;flex:none;color:#A8E89A}
+.valores .pill2{display:flex;gap:10px;align-items:center;background:#F7C948;color:#1C1404;border-radius:999px;padding:8px 16px 8px 10px;font-size:.88rem;line-height:1.2}
+.valores .pill2 b{font-family:var(--f-display);display:block;font-size:.98rem}
+.valores .pill2 svg{width:28px;height:28px;flex:none}
+.level .lv-top{display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:center}
+.level .lp{width:64px}
+.toast{display:grid;grid-template-columns:40px 1fr;gap:10px;align-items:center}
+.toast .lp{width:40px}
 .brand small{display:block;font-size:.72rem;opacity:.85;line-height:1.2}
 .score{margin-left:auto;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);
   border-radius:999px;padding:5px 11px 5px 8px;font-size:.82rem;font-weight:600;white-space:nowrap;cursor:pointer;color:#fff;min-height:36px}
@@ -127,7 +162,8 @@ h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1
 .scan form button{border:0;border-radius:12px;padding:0 16px;font-weight:700;background:#E8A33D;color:#1C1404;cursor:pointer;min-height:46px}
 
 /* Views */
-.view{padding-top:20px;display:grid;gap:22px}
+.view{padding-top:20px;display:grid;gap:22px;grid-template-columns:minmax(0,1fr)}
+.view>*{min-width:0}
 .view[hidden]{display:none!important}
 .sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
 .sec-h h2{font-size:1.25rem;font-weight:700}
@@ -273,8 +309,8 @@ footer b{color:var(--fg)}
 <header class="top">
   <div class="wrap">
     <a class="brand" href="#consultar" aria-label="LIMPA!, início">
-      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="10" fill="#E8A33D"/><path d="M10 13h14l-1.3 13.2a2 2 0 0 1-2 1.8h-7.4a2 2 0 0 1-2-1.8z" fill="#13573F"/><rect x="8.5" y="9.5" width="17" height="3" rx="1.5" fill="#13573F"/><path d="M14 9.5V8a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 20 8v1.5" stroke="#13573F" stroke-width="2" fill="none"/><path d="M15.2 21.5l1.8 1.8 3.6-4" stroke="#E8A33D" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span><b>LIMPA<span>!</span></b><small>Sua IA para educação ambiental</small></span>
+      <span class="head lp" data-limpinho="cabeca" aria-hidden="true"></span>
+      <span><b>LIMPA<svg class="bang" viewBox="0 0 10 22" aria-hidden="true"><path d="M5 1C9 4 9.5 10 5 15.5C.5 10 1 4 5 1z" fill="#7DDB6F"/><path d="M5 4v10" stroke="#185C28" stroke-width="1" opacity=".5"/><circle cx="5" cy="19.5" r="2.2" fill="#7DDB6F"/></svg></b><small>IA para educação ambiental</small></span>
     </a>
     <button class="score" id="scoreBtn" type="button" aria-label="Ver sua trilha de descartes">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 21c-4.4 0-8-3.4-8-8 0-5 4-9 12-9 0 8-3 12-4 12"/><path d="M12 21c0-5 2-8 5-10"/></svg>
@@ -286,7 +322,10 @@ footer b{color:var(--fg)}
 <section class="hero">
   <div class="wrap">
     <h1>Onde vai <em>isso</em> que está na sua mão?</h1>
-    <p>Digite, fotografe ou leia o código de barras da embalagem e veja a lixeira certa, como preparar e onde levar em Porto Alegre.</p>
+    <div class="hello">
+      <div class="lp" data-limpinho="ola" aria-hidden="true"></div>
+      <p class="bubble"><b>Olá! Eu sou o Limpinho!</b><br>Digite, tire uma foto ou leia o código da embalagem. Eu mostro a lixeira certa, como preparar e onde levar em Porto Alegre.</p>
+    </div>
     <form class="search" id="searchForm" role="search" autocomplete="off">
       <label for="q">Buscar resíduo</label>
       <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -298,11 +337,11 @@ footer b{color:var(--fg)}
     <div class="photo" id="photoBox">
       <label class="cam" for="cam">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.6"/></svg>
-        <span><b>Tirar ou enviar foto do resíduo</b><small id="camSub">O LIMPA! reconhece e indica o descarte</small></span>
+        <span><b>Tirar ou enviar foto do resíduo</b><small id="camSub">O Limpinho reconhece e indica o descarte</small></span>
       </label>
       <button class="cam alt" type="button" id="scanBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 8v8M10 8v8M13 8v8M16 8v8"/></svg>
-        <span><b>Ler código de barras</b><small>Desrotule a embalagem</small></span>
+        <span><b>Ler código ou QR Code</b><small>Desrotule a embalagem</small></span>
       </button>
       <input id="cam" type="file" accept="image/*" capture="environment" hidden>
     </div>
@@ -319,13 +358,28 @@ footer b{color:var(--fg)}
     </article>
 
     <div>
+      <div class="sec-h"><h2>O Limpinho te ajuda a</h2><span class="eyebrow">Toque para começar</span></div>
+      <div class="ctx" id="ctx">
+        <button type="button" data-acao="foto"><span class="lp" data-limpinho="foto" aria-hidden="true"></span><b>Tirar foto</b><span>Identifique seu resíduo de forma simples</span></button>
+        <button type="button" data-acao="cores"><span class="lp" data-limpinho="orientar" aria-hidden="true"></span><b>Orientar</b><span>Descubra a lixeira e o destino certo</span></button>
+        <button type="button" data-acao="ecopontos"><span class="lp" data-limpinho="dicas" aria-hidden="true"></span><b>Educar</b><span>Ecopontos, horários e dicas da cidade</span></button>
+        <button type="button" data-acao="quiz"><span class="lp" data-limpinho="conquistar" aria-hidden="true"></span><b>Conquistar</b><span>Ganhe pontos e suba de nível na trilha</span></button>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-h"><h2>Mensagens da LIMPA!</h2></div>
+      <div class="quotes"><q>Uma foto, uma resposta, um planeta mais limpo.</q><q>Descartou certo, cuidou do planeta.</q><q>Pequenas atitudes fazem uma grande diferença!</q><q>Vamos juntos por um mundo mais verde!</q><q>Sustentabilidade também se aprende com tecnologia.</q></div>
+    </div>
+
+    <div>
       <div class="sec-h"><h2>Navegue por tipo</h2><span class="eyebrow" id="catCount"></span></div>
       <div class="cats" id="cats"></div>
       <div class="items" id="catItems"></div>
     </div>
 
     <section class="how" aria-labelledby="howT">
-      <h2 id="howT">Como o assistente LIMPA! responde</h2>
+      <h2 id="howT">Como o Limpinho responde</h2>
       <p>Digite o nome, tire uma foto do resíduo ou leia o código de barras da embalagem. No piloto, a mesma base atende também pelo WhatsApp e pelo QR Code, com áudio.</p>
       <ol class="steps">
         <li><span><b>Você manda o resíduo</b>Foto do filtro de café, código de barras do iogurte ou só o nome do item.</span></li>
@@ -391,10 +445,20 @@ footer b{color:var(--fg)}
     <div class="quiz" id="quiz"></div>
   </section>
 
+  <section class="valores" aria-label="Valores do LIMPA!">
+    <ul>
+      <li><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 3C10 3 4 8 4 15c0 2 .5 3.6 1.3 5C7 13 12 10 16 9c-4 2.5-7.5 6.4-9 11.6.9.3 1.9.4 3 .4 7 0 10-6.5 10-18z"/></svg>Educação</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4.5 6.5 9M15 4.5l2.5 4.5M4 15.5h5M20 15.5h-5M10 4h4l3 5M7 9l-3 6.5M17 9l3 6.5M9 15.5l3 4.5 3-4.5"/></svg>Conscientização</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5M15 14c3 0 6 1.6 6 4.5"/></svg>Impacto social</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/></svg>Um futuro mais verde</li>
+    </ul>
+    <div class="pill2"><svg viewBox="0 0 24 24" fill="#2A8A3B" aria-hidden="true"><path d="M20 3C10 3 4 8 4 15c0 2 .5 3.6 1.3 5C7 13 12 10 16 9c-4 2.5-7.5 6.4-9 11.6.9.3 1.9.4 3 .4 7 0 10-6.5 10-18z"/></svg><span><b>Descartar certo</b>é sempre uma boa ideia!</span></div>
+  </section>
+
   <footer>
     <div><b>LIMPA! Sua IA para educação ambiental</b> · protótipo educativo do Projeto Limpa POA (Grupo 5, MBA UniSenac RS). Orienta o uso dos serviços que a cidade já oferece. Não fiscaliza, não multa e não recebe denúncias.</div>
     <div>Informações reunidas de páginas oficiais da Prefeitura de Porto Alegre e do DMLU, consultadas em <span class="dataRes"></span>. Dados de embalagem por código de barras: Open Food Facts (base colaborativa). Em caso de dúvida, vale o que diz a Central 156.</div>
-    <div>Privacidade: fotos não são salvas; a pontuação fica só neste aparelho.</div>
+    <div>Privacidade: a foto é analisada no próprio aparelho e não é salva; a pontuação fica só neste aparelho.</div>
   </footer>
 </main>
 
@@ -409,13 +473,13 @@ footer b{color:var(--fg)}
 
 <!-- Leitor de código de barras -->
 <div class="scan" id="scan" role="dialog" aria-modal="true" aria-label="Ler código de barras" hidden>
-  <header><b>Aponte para o código de barras</b><button type="button" id="scanClose">Fechar</button></header>
+  <header><b>Aponte para o código de barras ou QR Code</b><button type="button" id="scanClose">Fechar</button></header>
   <div class="stage">
     <video id="scanVideo" playsinline muted></video>
     <div class="reticle" aria-hidden="true"></div>
     <div class="msg" id="scanMsg">Iniciando a câmera…</div>
   </div>
-  <form id="scanForm"><input id="scanCode" inputmode="numeric" pattern="[0-9]*" placeholder="Ou digite os números do código" aria-label="Número do código de barras"><button type="submit">Buscar</button></form>
+  <form id="scanForm"><input id="scanCode" inputmode="numeric" pattern="[0-9]*" placeholder="Ou digite os números do código" aria-label="Número do código de barras"><button type="submit">Buscar</button><button type="button" id="scanFoto" aria-label="Tirar foto da embalagem">📷</button></form>
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -429,6 +493,50 @@ const norm=s=>String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").re
 const fmtData=iso=>{const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(iso||"");return m?`${m[3]}/${m[2]}/${m[1]}`:"data não informada"};
 const scrollToResult=()=>setTimeout(()=>$("#result").scrollIntoView({behavior:"smooth",block:"start"}),60);
 const goConsultar=()=>{if(location.hash!=="#consultar"&&location.hash!=="") location.hash="consultar"};
+
+/* ---------- Limpinho, o mascote (SVG próprio, poses do guia de marca) ---------- */
+function limpinho(pose){
+  const G="#2E9D3F",GL="#4CB84F",GD="#1F7A2E",V="#0E4A22",E="#A6F28A",W="#FFFFFF",S="#DCEBDD";
+  const happy=pose==="conquistar"||pose==="orientar";
+  const wink=pose==="ola"||pose==="dicas"||pose==="cabeca";
+  const eyeL=happy?`<path d="M42 62q7-8 14 0" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/>`:`<ellipse cx="49" cy="60" rx="6" ry="8" fill="${E}"/>`;
+  const eyeR=happy||wink?`<path d="M64 62q7-8 14 0" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/>`:`<ellipse cx="71" cy="60" rx="6" ry="8" fill="${E}"/>`;
+  const mouth=pose==="pensando"?`<path d="M54 74h12" stroke="${E}" stroke-width="3.5" stroke-linecap="round"/>`:`<path d="M51 71q9 8 18 0" stroke="${E}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+  const head=`<path d="M60 30v-7" stroke="${GD}" stroke-width="3" stroke-linecap="round"/>
+    <path d="M60 24C47 5 25 7 20 14c6 13 25 16 40 10z" fill="${G}"/><path d="M60 24C73 3 97 6 101 13c-6 14-26 17-41 11z" fill="${GL}"/>
+    <path d="M58 22C48 15 36 13 26 14M62 22c10-8 23-10 34-8" stroke="#ffffff" stroke-opacity=".35" stroke-width="1.6" fill="none"/>
+    <rect x="15" y="48" width="15" height="28" rx="7.5" fill="${G}"/><rect x="90" y="48" width="15" height="28" rx="7.5" fill="${G}"/>
+    <rect x="23" y="28" width="74" height="64" rx="30" fill="${W}" stroke="${S}" stroke-width="2"/>
+    <rect x="31" y="39" width="58" height="43" rx="19" fill="${V}"/>
+    <path d="M37 47q4-5 12-6" stroke="#ffffff" stroke-opacity=".25" stroke-width="3" fill="none" stroke-linecap="round"/>${eyeL}${eyeR}${mouth}`;
+  if(pose==="cabeca") return `<svg viewBox="12 2 96 94" aria-hidden="true">${head}</svg>`;
+  const recic=`<g transform="translate(60 113) scale(.36) translate(-46 -55)" fill="none" stroke="${G}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M38 50l6-10 6 10"/><path d="M53 58l5 9H46"/><path d="M39 67h-6l5-9"/></g>`;
+  const body=`<rect x="42" y="124" width="15" height="18" rx="6" fill="${G}"/><rect x="63" y="124" width="15" height="18" rx="6" fill="${G}"/>
+    <rect x="35" y="92" width="50" height="38" rx="18" fill="${W}" stroke="${S}" stroke-width="2"/>${recic}`;
+  const armL=pose==="conquistar"?`<ellipse cx="27" cy="92" rx="7" ry="13" transform="rotate(35 27 92)" fill="${G}"/><circle cx="21" cy="80" r="7" fill="${G}"/>`
+    :`<ellipse cx="31" cy="108" rx="7" ry="13" transform="rotate(18 31 108)" fill="${G}"/>`;
+  let armR="",extra="";
+  switch(pose){
+    case "ola": armR=`<ellipse cx="91" cy="100" rx="7" ry="13" transform="rotate(-30 91 100)" fill="${G}"/><circle cx="97" cy="88" r="7.5" fill="${G}"/><rect x="95" y="76" width="5" height="11" rx="2.5" fill="${G}"/>`;break;
+    case "identificar": armR=`<ellipse cx="91" cy="98" rx="7" ry="13" transform="rotate(-35 91 98)" fill="${G}"/>`;
+      extra=`<path d="M96 88l8-8" stroke="#8A5A12" stroke-width="5" stroke-linecap="round"/><circle cx="108" cy="72" r="12" fill="#CDEFE0" fill-opacity=".55" stroke="#E8A33D" stroke-width="4"/>`;break;
+    case "dicas": armR=`<ellipse cx="91" cy="98" rx="7" ry="13" transform="rotate(-35 91 98)" fill="${G}"/><circle cx="96" cy="87" r="7" fill="${G}"/>`;
+      extra=`<circle cx="104" cy="22" r="10" fill="#FFD54A"/><rect x="99.5" y="31" width="9" height="6" rx="2" fill="#9AA0A6"/><path d="M104 6v-4M90 12l-3-3M118 12l3-3" stroke="#E8A33D" stroke-width="2.5" stroke-linecap="round"/>`;break;
+    case "conquistar": armR=`<ellipse cx="93" cy="92" rx="7" ry="13" transform="rotate(-35 93 92)" fill="${G}"/><circle cx="99" cy="80" r="7" fill="${G}"/>`;
+      extra=`<circle cx="106" cy="62" r="11" fill="#F2C230" stroke="#C99A12" stroke-width="2"/><path d="M106 56c4 3 4 8 0 12-4-4-4-9 0-12z" fill="#2E9D3F"/>`;break;
+    case "pensando": armR=`<ellipse cx="80" cy="100" rx="7" ry="12" transform="rotate(-60 80 100)" fill="${G}"/><circle cx="72" cy="95" r="6.5" fill="${G}"/>`;
+      extra=`<text x="100" y="34" font-family="Bricolage Grotesque,system-ui,sans-serif" font-weight="800" font-size="28" fill="#E8A33D">?</text>`;break;
+    case "foto": armR=`<ellipse cx="89" cy="108" rx="7" ry="12" transform="rotate(-18 89 108)" fill="${G}"/>`;
+      extra=`<rect x="40" y="96" width="40" height="27" rx="6" fill="#2B2F33"/><rect x="47" y="92" width="11" height="6" rx="2" fill="#2B2F33"/><circle cx="60" cy="109.5" r="8.5" fill="#4B5259" stroke="#9AA0A6" stroke-width="2"/><circle cx="60" cy="109.5" r="3.5" fill="#1C1F22"/><circle cx="34" cy="109" r="6.5" fill="${G}"/><circle cx="86" cy="109" r="6.5" fill="${G}"/>`;break;
+    case "orientar": armR=`<ellipse cx="91" cy="98" rx="7" ry="13" transform="rotate(-35 91 98)" fill="${G}"/><circle cx="97" cy="86" r="7" fill="${G}"/>`;
+      extra=`<g transform="translate(92 104)"><rect x="0" y="6" width="9" height="16" rx="2" fill="#D63B30"/><rect x="10" y="6" width="9" height="16" rx="2" fill="#1F6FD1"/><rect x="20" y="6" width="9" height="16" rx="2" fill="#F2C230"/><rect x="-1" y="3" width="31" height="4" rx="2" fill="#2E9B4E"/></g>`;break;
+    default: armR=`<ellipse cx="89" cy="108" rx="7" ry="13" transform="rotate(-18 89 108)" fill="${G}"/>`;
+  }
+  const vb=(pose==="dicas"||pose==="pensando")?"6 0 118 146":(pose==="orientar"?"6 2 120 144":"6 2 116 144");
+  return `<svg viewBox="${vb}" aria-hidden="true">${body}${armL}${armR}${head}${extra}</svg>`;
+}
+const pintarLimpinhos=(raiz)=>(raiz||document).querySelectorAll("[data-limpinho]").forEach(el=>{if(!el.firstChild) el.innerHTML=limpinho(el.dataset.limpinho)});
+const lp=(pose)=>`<span class="lp">${limpinho(pose)}</span>`;
 
 /* ---------- Fontes oficiais (citação obrigatória) ---------- */
 const SRC={
@@ -545,18 +653,19 @@ const CHEERS={
  6:"Seis descartes certos. Você já é Árvore na trilha!",
  10:"Dez! Você é oficialmente Agente Limpa POA. Que tal ensinar alguém?"
 };
-const CHEER_MORE=["Os catadores agradecem: material separado é renda para as cooperativas.","Boa! Separar certo ajuda a cidade a gastar menos com aterro.","Mandou bem. Rua limpa, bueiro livre, menos alagamento.","Cada acerto conta. O Guaíba agradece!","Isso! Você está usando bem o serviço que a cidade já tem."];
+const CHEER_MORE=["Descartou certo, cuidou do planeta.","Os catadores agradecem: material separado é renda para as cooperativas.","Pequenas atitudes fazem uma grande diferença!","Mandou bem. Rua limpa, bueiro livre, menos alagamento.","Vamos juntos por um mundo mais verde!","Cada acerto conta. O Guaíba agradece!","Uma foto, uma resposta, um planeta mais limpo."];
 function levelOf(p){let l=LEVELS[0],nx=null;for(let i=0;i<LEVELS.length;i++){if(p>=LEVELS[i][0]){l=LEVELS[i];nx=LEVELS[i+1]||null}}return {l,nx}}
 function renderScore(){ $("#scoreNum").textContent=pts; renderLevel(); }
 function renderLevel(){
   const {l,nx}=levelOf(pts); const base=l[0]; const pct=nx?Math.round((pts-base)/(nx[0]-base)*100):100;
-  $("#level").innerHTML=`<div class="lv-row"><span class="eyebrow">Sua trilha</span><span style="font-variant-numeric:tabular-nums;font-weight:700">${pts} descarte${pts===1?"":"s"} certo${pts===1?"":"s"}</span></div>
-  <div class="lv-row"><b>${l[1]}</b>${nx?`<small>faltam ${nx[0]-pts} para ${nx[1]}</small>`:"<small>nível máximo</small>"}</div>
+  $("#level").innerHTML=`<div class="lv-top">${lp(pts>=3?"conquistar":"ola")}<div style="min-width:0;display:grid;gap:4px">
+  <div class="lv-row"><span class="eyebrow">Sua trilha</span><span style="font-variant-numeric:tabular-nums;font-weight:700">${pts} descarte${pts===1?"":"s"} certo${pts===1?"":"s"}</span></div>
+  <div class="lv-row"><b>${l[1]}</b>${nx?`<small>faltam ${nx[0]-pts} para ${nx[1]}</small>`:"<small>nível máximo</small>"}</div></div></div>
   <div class="lv-bar"><i style="width:${pct}%"></i></div>
   <small>Marque "Descartei certo" nos cards e acerte o quiz para avançar. A contagem fica só neste aparelho.</small>`;
 }
 let toastT;
-function toast(html){const t=$("#toast");t.innerHTML=html;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),3800)}
+function toast(html){const t=$("#toast");t.innerHTML=lp("conquistar")+`<div>${html}</div>`;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),3800)}
 function addPoint(src){
   pts++; store.set("limpapoai_pts",pts); renderScore();
   const msg=CHEERS[pts]||CHEER_MORE[pts%CHEER_MORE.length];
@@ -612,7 +721,7 @@ Melhor horário para contato: </textarea>
      <div class="blk"><h3>${icoList}Como preparar</h3><ul>${(it.prep||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
      <div class="blk"><h3>${icoPin}Onde e quando, em Porto Alegre</h3><ul>${where.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
      ${ecoList}${draft}
-     ${it.tip?`<div class="know"><b>${esc(it.tip[0])}</b>${esc(it.tip[1])}</div>`:""}
+     ${it.tip?`<div class="tipbox">${lp("dicas")}<div><b>Limpinho dá a dica: ${esc(it.tip[0])}</b>${esc(it.tip[1])}</div></div>`:""}
      <div class="r-actions"><button class="btn primary" type="button" id="doneBtn" ${done?"disabled":""}>${icoCheck}${done?"Descarte registrado":"Descartei certo"}</button>
        <button class="btn ghost" type="button" id="newBtn">Buscar outro</button></div>
      <div class="src">Fonte: ${srcHtml}. Padrão de cores: Resolução CONAMA 275/2001. Consultado em ${DATA_RES}.</div>
@@ -636,7 +745,7 @@ function fallbackHtml(){
     <div class="know"><b>Regra de bolso</b>Seco e limpo costuma ir na seletiva. Sujo de comida vai no orgânico. Pilha, lâmpada, remédio, óleo e eletrônico precisam de ponto de entrega.</div>`;
 }
 function showFallback(q){
-  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">🤔</div>
+  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">${lp("pensando")}</div>
    <div style="min-width:0"><h2>Não encontrei "${esc(q)}" com segurança</h2><span class="pill eco">Fallback · Central 156</span></div></div>
    <div class="r-body">
     <p style="margin:0">Prefiro não chutar uma regra sem fonte oficial. Tente outra palavra (por exemplo, o material: plástico, vidro, metal) ou consulte a Prefeitura:</p>
@@ -793,23 +902,27 @@ function route(){
 window.addEventListener("hashchange",route);
 
 /* =====================================================================
-   FOTO — 1) procura código de barras na própria foto (gratuito, no aparelho)
-          2) se não houver, envia ao servidor /api/identificar (Claude)
-   A foto é reduzida no aparelho (máx. 1024 px, JPEG 0,8) e não é salva.
+   FOTO — 1) procura código de barras / QR Code na própria foto (grátis, no aparelho)
+          2) se o servidor tiver chave do Claude, pergunta ao Claude
+          3) senão, o Limpinho reconhece NO APARELHO (MobileCLIP, ~22 MB, baixa uma vez)
+   A IA só escolhe itens da base. A foto não sai do celular no modo 3 e nunca é salva.
    ===================================================================== */
 let iaAtiva=null, lastUrl=null, camCtl=null;
+const TRANSFORMERS_URL="https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2";
+const ZXING_URL="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
+function loadScript(src){return new Promise((ok,ko)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=ko;document.head.appendChild(s)})}
 async function checarIA(){
   try{
     const r=await fetch("api/identificar",{cache:"no-store"});
     const j=r.ok?await r.json():null; iaAtiva=!!(j&&j.ativo);
   }catch(e){iaAtiva=false}
-  $("#camSub").textContent=iaAtiva?"O LIMPA! reconhece e indica o descarte":"Lê o código de barras da foto";
 }
-function photoBanner(url,r,conf){
+function photoBanner(url,r,conf,origem){
   const cl=conf==="media"?"conf media":"conf";
-  const ct=conf==="media"?"Confiança média: confira se é isso":"Reconhecido com confiança";
-  return `<div class="ai">${url?`<img src="${url}" alt="Sua foto">`:`<div class="ph" aria-hidden="true">📷</div>`}<div style="min-width:0"><small>Identificado na sua foto</small><b>${esc(r.objeto||"")}</b>
-   <span class="${cl}">${ct}</span>${r.estado?`<small>Estado: ${esc(r.estado)}</small>`:""}
+  const ct=conf==="media"?"Confira se é isso":"Reconhecido com confiança";
+  const orig=origem==="local"?"Analisado no seu aparelho; a foto não foi enviada.":"Analisado pela IA do LIMPA!; a foto não foi salva.";
+  return `<div class="ai">${url?`<img src="${url}" alt="Sua foto">`:`<div class="ph" aria-hidden="true">📷</div>`}<div style="min-width:0"><small>O Limpinho viu na sua foto</small><b>${esc(r.objeto||"")}</b>
+   <span class="${cl}">${ct}</span>${r.estado?`<small>Estado: ${esc(r.estado)}</small>`:""}<small>${orig}</small>
    <small><a href="#" class="photo-again">Tirar outra foto</a> · <a href="#" class="photo-search">Não é isso? Buscar pelo nome</a></small></div></div>`;
 }
 function bindPhotoLinks(){
@@ -817,11 +930,11 @@ function bindPhotoLinks(){
   document.querySelectorAll(".photo-search").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();window.scrollTo({top:0,behavior:"smooth"});setTimeout(()=>$("#q").focus(),300)}));
 }
 function photoMsg(url,title,body,chips,extra){
-  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">📷</div><div style="min-width:0"><h2>${esc(title)}</h2><span class="pill eco">Foto</span></div></div>
+  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">${lp("pensando")}</div><div style="min-width:0"><h2>${esc(title)}</h2><span class="pill eco">Foto</span></div></div>
    <div class="r-body">${url?`<div class="ai"><img src="${url}" alt="Sua foto"><div style="min-width:0">${body}</div></div>`:`<div>${body}</div>`}
    ${chips&&chips.length?chipsHtml(chips):""}
    ${extra||""}
-   <div class="r-actions"><button class="btn primary" type="button" id="againBtn">Tirar outra foto</button><button class="btn ghost" type="button" id="scanBtn2">Ler código de barras</button><button class="btn ghost" type="button" id="typeBtn">Digitar o nome</button></div>
+   <div class="r-actions"><button class="btn primary" type="button" id="againBtn">Tirar outra foto</button><button class="btn ghost" type="button" id="scanBtn2">Ler código</button><button class="btn ghost" type="button" id="typeBtn">Digitar o nome</button></div>
    <div class="src">A foto é usada só para esta análise e não fica salva. Evite fotografar pessoas.</div></div>`;
   $("#againBtn").addEventListener("click",()=>$("#cam").click());
   $("#scanBtn2").addEventListener("click",openScanner);
@@ -841,117 +954,221 @@ function reduzir(img,max){
   c.getContext("2d").drawImage(img,0,0,c.width,c.height);
   return c;
 }
-async function codigoNaImagem(src){
+
+/* ---------- Leitura de códigos: EAN/UPC, QR Code, DataMatrix, Code 128, ITF ---------- */
+const FORMATOS=["ean_13","ean_8","upc_a","upc_e","qr_code","data_matrix","code_128","itf"];
+let detector=null;
+async function getDetector(){
+  if(detector!==null) return detector;
+  detector=false;
   try{
     if("BarcodeDetector" in window){
-      const d=new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e"]});
-      const r=await d.detect(src); if(r&&r[0]) return r[0].rawValue;
+      const fm=await BarcodeDetector.getSupportedFormats();
+      const f=FORMATOS.filter(x=>fm.includes(x));
+      if(f.length) detector=new BarcodeDetector({formats:f});
+    }
+  }catch(e){}
+  return detector;
+}
+async function zxing(){ if(!window.ZXing) await loadScript(ZXING_URL); return window.ZXing; }
+function zxHints(Z){
+  const h=new Map(), F=Z.BarcodeFormat;
+  h.set(Z.DecodeHintType.POSSIBLE_FORMATS,[F.EAN_13,F.EAN_8,F.UPC_A,F.UPC_E,F.QR_CODE,F.DATA_MATRIX,F.CODE_128,F.ITF]);
+  h.set(Z.DecodeHintType.TRY_HARDER,true);
+  return h;
+}
+// Extrai o GTIN (código do produto) de EAN, GS1 Digital Link (QR), GS1 DataMatrix/Code128 ou links com ?ean=
+function extrairGTIN(raw){
+  const s=String(raw||"").trim();
+  if(/^\d{8,14}$/.test(s)) return s;
+  let m=s.match(/\/01\/(\d{14}|\d{13}|\d{12}|\d{8})(?:\b|\/|\?|$)/); if(m) return m[1];
+  const t=s.replace(/^\][A-Za-z]\d/,"").replace(/[\x1d\s()]/g,"");
+  m=t.match(/^01(\d{14})/); if(m) return m[1];
+  m=s.match(/(?:gtin|ean|barcode|codigo|code)[=:\/](\d{8,14})/i); if(m) return m[1];
+  return null;
+}
+async function codigoNaImagem(img){
+  const det=await getDetector();
+  const fontes=[img]; const w=img.width||img.naturalWidth||0;
+  if(w>1400) fontes.push(reduzir(img,1280));
+  if(det){
+    for(const f of fontes){
+      try{ const r=await det.detect(f); if(r&&r.length){ const pref=r.find(x=>extrairGTIN(x.rawValue))||r[0]; return pref.rawValue; } }catch(e){}
+    }
+    return null;
+  }
+  // Sem leitor nativo (navegador de computador e alguns celulares): ZXing
+  try{
+    const Z=await zxing(); const reader=new Z.BrowserMultiFormatReader(zxHints(Z));
+    for(const max of [1600,900]){
+      try{ const res=await reader.decodeFromImageUrl(reduzir(img,max).toDataURL("image/jpeg",0.92)); if(res) return res.getText(); }catch(e){}
     }
   }catch(e){}
   return null;
 }
+function tratarCodigo(raw,photoUrl){
+  const g=extrairGTIN(raw);
+  if(g) return lookupBarcode(g,photoUrl);
+  qrSemProduto(raw,photoUrl);
+}
+function qrSemProduto(raw,photoUrl){
+  let host="";
+  try{ const u=new URL(raw); if(/^https?:$/.test(u.protocol)) host=u.hostname.replace(/^www\./,""); }catch(e){}
+  const chips=["pet","pote","lata","vidro","longavida","papelao","salgadinho","isopor"].map(i=>byId[i]).filter(Boolean);
+  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">${lp("pensando")}</div><div style="min-width:0"><h2>${host?"QR Code de um site":"Código sem produto"}</h2><span class="pill eco">QR Code</span></div></div>
+    <div class="r-body">
+      ${photoUrl?`<div class="ai"><img src="${photoUrl}" alt="Sua foto"><div><small>Código lido na sua foto</small><b>${esc(host||String(raw).slice(0,60))}</b></div></div>`:""}
+      <p style="margin:0">${host?`Este QR Code leva ao site <b>${esc(host)}</b> e não informa o material da embalagem.`:"Este código não identifica o produto."} Tire uma foto da embalagem que o Limpinho reconhece, ou escolha abaixo:</p>
+      <div class="r-actions"><button class="btn amber" type="button" id="photoAgain">📷 Fotografar a embalagem</button><button class="btn ghost" type="button" id="scanAgain">Ler o código de barras</button></div>
+      ${chipsHtml(chips)}
+      <div class="src">Sem regra segura, o LIMPA! não chuta: na dúvida, Central 156.</div>
+    </div>`;
+  $("#scanAgain").addEventListener("click",openScanner);
+  $("#photoAgain").addEventListener("click",()=>$("#cam").click());
+  goConsultar(); scrollToResult();
+}
+
+/* ---------- Reconhecimento no aparelho (MobileCLIP) ---------- */
+let clipP=null, clipProg=null;
+function carregarClip(){
+  if(!clipP) clipP=(async()=>{
+    const [T,meta]=await Promise.all([import(TRANSFORMERS_URL),carregarJSON("data/clip-textos.json")]);
+    const bin=Uint8Array.from(atob(meta.emb_b64),c=>c.charCodeAt(0));
+    const emb=new Float32Array(bin.buffer);
+    const prog={};
+    const cb=p=>{ if(p&&p.status==="progress"&&p.total){ prog[p.file]=[p.loaded,p.total];
+      const v=Object.values(prog); const l=v.reduce((s,x)=>s+x[0],0), t=v.reduce((s,x)=>s+x[1],0);
+      if(clipProg) clipProg(Math.min(100,Math.round(l/t*100)),t); } };
+    const proc=await T.AutoProcessor.from_pretrained(meta.modelo,{progress_callback:cb});
+    const vm=await T.CLIPVisionModelWithProjection.from_pretrained(meta.modelo,{dtype:"fp16",progress_callback:cb});
+    return {T,meta,emb,proc,vm};
+  })().catch(e=>{clipP=null;throw e});
+  return clipP;
+}
+async function reconhecerNoAparelho(url){
+  const {T,meta,emb,proc,vm}=await carregarClip();
+  const img=await T.RawImage.read(url);
+  const {image_embeds}=await vm(await proc(img));
+  const v=image_embeds.normalize().tolist()[0];
+  const d=meta.dim;
+  const logits=meta.ids.map((id,i)=>{let s=0;for(let k=0;k<d;k++) s+=v[k]*emb[i*d+k];return 100*s});
+  const mx=Math.max(...logits); const ex=logits.map(x=>Math.exp(x-mx)); const tot=ex.reduce((a,b)=>a+b,0);
+  return meta.ids.map((id,i)=>({id,p:ex[i]/tot})).sort((a,b)=>b.p-a.p);
+}
+// Converte o ranking do modelo no mesmo formato da resposta do servidor (contrato de prompt-foto.md)
+function interpretarLocal(rank){
+  const top=rank[0];
+  if(top.id.startsWith("_")&&top.p>=0.35) return {id:"nenhum",objeto:"",confianca:"baixa",alternativas:[],pergunta:"Não vi um resíduo nesta foto. Fotografe só o objeto, de perto e com boa luz."};
+  const itens=rank.filter(r=>byId[r.id]);
+  const t=itens[0]; const conf=t.p>=0.6?"media":"baixa";
+  return {id:t.id,objeto:"Parece: "+byId[t.id].n,confianca:conf,estado:"",alternativas:itens.slice(1,3).map(r=>r.id),
+    pergunta:conf==="baixa"?"Fiquei em dúvida. É algum destes?":""};
+}
+function mostrarResultadoFoto(res,origem){
+  const id=String(res.id||"nenhum"); const conf=["alta","media","baixa"].includes(res.confianca)?res.confianca:"baixa";
+  const alts=(Array.isArray(res.alternativas)?res.alternativas:[]).map(String).filter(x=>byId[x]&&x!==id).slice(0,2);
+  const it=byId[id];
+  if(it&&conf!=="baixa"){ showItem(it,true,photoBanner(lastUrl,res,conf,origem)); return; }
+  const chips=[it,...alts.map(x=>byId[x])].filter(Boolean).slice(0,3);
+  const body=`<small>O que o Limpinho viu</small><b>${esc(res.objeto||"Não consegui identificar")}</b>
+    <small>${esc(res.pergunta||"Tente uma foto mais próxima, com boa luz e um objeto por vez.")}</small>`;
+  photoMsg(lastUrl,chips.length?"É algum destes?":"Não reconheci com segurança",body,chips,chips.length?"":`<p style="margin:0">Sem certeza, o LIMPA! não chuta. Digite o nome ou pergunte à Central 156:</p>${fallbackHtml()}`);
+}
 const ERR_FOTO={limite:"Muitas análises seguidas. Espere um minuto e tente de novo.",tipo:"Formato de imagem não aceito. Use JPG, PNG ou WebP.",
-  grande:"A foto ficou grande demais. Tente de novo.",tempo:"A análise demorou demais (15 s). Tente outra foto, mais de perto.",
-  nao_configurado:"O reconhecimento por foto ainda não foi ativado neste link.",rede:"Sem conexão com o servidor. Confira a internet."};
+  grande:"A foto ficou grande demais. Tente de novo.",tempo:"A análise demorou demais. Tente outra foto, mais de perto.",rede:"Sem conexão. Confira a internet."};
+// Começa a baixar o modelo assim que a pessoa toca no botão da câmera (enquanto ela fotografa)
+function preCarregar(){ if(iaAtiva===false) carregarClip().catch(()=>{}); }
+document.querySelectorAll('label[for="cam"]').forEach(l=>l.addEventListener("click",preCarregar));
 
 $("#cam").addEventListener("change",async e=>{
   const f=e.target.files&&e.target.files[0]; e.target.value=""; if(!f||!ITEMS.length) return;
   if(lastUrl) URL.revokeObjectURL(lastUrl); lastUrl=URL.createObjectURL(f);
   goConsultar();
   if(camCtl) camCtl.abort(); camCtl=new AbortController(); const ctl=camCtl;
-  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">📷</div><div style="min-width:0"><h2>Analisando sua foto…</h2><span class="pill eco">LIMPA!</span></div></div>
-   <div class="r-body"><div class="ai"><img src="${lastUrl}" alt="Sua foto"><div><span class="spin" aria-hidden="true"></span> <span>Procurando código de barras e identificando o resíduo</span></div></div>
+  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">${lp("identificar")}</div><div style="min-width:0"><h2>O Limpinho está olhando…</h2><span class="pill eco">LIMPA!</span></div></div>
+   <div class="r-body"><div class="ai"><img src="${lastUrl}" alt="Sua foto"><div><span class="spin" aria-hidden="true"></span> <span id="fotoStatus">Procurando código de barras ou QR Code</span></div></div>
    <div class="r-actions"><button class="btn ghost" type="button" id="stopBtn">Cancelar</button></div></div>`;
   $("#stopBtn").addEventListener("click",()=>ctl.abort());
   scrollToResult();
+  const status=t=>{const s=$("#fotoStatus"); if(s) s.textContent=t;};
 
   let img;
   try{img=await carregarImagem(f)}catch(err){return photoMsg(lastUrl,"Não consegui abrir essa imagem","<small>Tente outra foto (JPG ou PNG).</small>",[])}
-  // 1) Código de barras na foto (gratuito, no aparelho)
+  // 1) Código de barras / QR Code na foto
   const cod=await codigoNaImagem(img);
   if(ctl.signal.aborted) return;
-  if(cod) return lookupBarcode(cod,lastUrl);
+  if(cod) return tratarCodigo(cod,lastUrl);
 
-  // 2) IA no servidor
+  const canvas=reduzir(img,1024);
+  const blob=await new Promise(ok=>canvas.toBlob(ok,"image/jpeg",0.85));
   if(iaAtiva===null) await checarIA();
-  if(!iaAtiva){
-    return photoMsg(lastUrl,"Não encontrei código de barras na foto",
-      `<small>O reconhecimento do objeto por IA ainda não está ativo neste link de teste.</small><small>Tente <b>Ler código de barras</b> com a câmera ao vivo, escolha abaixo ou digite o nome.</small>`,
-      ["pet","lata","vidro","longavida","pote","papelao"].map(i=>byId[i]).filter(Boolean));
+
+  // 2) Claude no servidor (se configurado)
+  if(iaAtiva){
+    status("Identificando o resíduo e consultando a base oficial");
+    try{
+      const fd=new FormData(); fd.append("foto",blob,"foto.jpg");
+      const t=setTimeout(()=>ctl.abort(),17000);
+      let resp; try{resp=await fetch("api/identificar",{method:"POST",body:fd,signal:ctl.signal})} finally{clearTimeout(t)}
+      const res=await resp.json().catch(()=>({erro:"falha"}));
+      if(ctl.signal.aborted) return;
+      if(resp.ok&&!res.erro) return mostrarResultadoFoto(res,"servidor");
+      if(res.erro&&res.erro!=="nao_configurado"&&ERR_FOTO[res.erro]) status(ERR_FOTO[res.erro]+" Tentando no aparelho…");
+    }catch(err){ if(ctl.signal.aborted) return photoMsg(lastUrl,"Análise interrompida","<small>Cancelada ou demorou demais. Nada foi salvo.</small>",[]); }
   }
+
+  // 3) Reconhecimento no próprio aparelho
+  const url=URL.createObjectURL(blob);
+  clipProg=(pct,total)=>status(`Primeira vez: o Limpinho está aprendendo a enxergar (${pct}% de ${Math.round(total/1048576)} MB). Depois fica guardado no aparelho.`);
+  status(clipP?"Identificando o resíduo no seu aparelho":"Preparando o reconhecimento no aparelho…");
   try{
-    const canvas=reduzir(img,1024);
-    const blob=await new Promise(ok=>canvas.toBlob(ok,"image/jpeg",0.8));
-    const fd=new FormData(); fd.append("foto",blob,"foto.jpg");
-    const t=setTimeout(()=>ctl.abort(),17000);
-    let resp;
-    try{resp=await fetch("api/identificar",{method:"POST",body:fd,signal:ctl.signal})}
-    finally{clearTimeout(t)}
-    const res=await resp.json().catch(()=>({erro:"falha"}));
+    const rank=await reconhecerNoAparelho(url);
     if(ctl.signal.aborted) return;
-    if(!resp.ok||res.erro) return photoMsg(lastUrl,"Não foi possível analisar a foto",`<small>${esc(ERR_FOTO[res.erro]||"Houve uma falha na análise. Tente de novo ou digite o nome do resíduo.")}</small>`,[]);
-    const id=String(res.id||"nenhum"); const conf=["alta","media","baixa"].includes(res.confianca)?res.confianca:"baixa";
-    const alts=(Array.isArray(res.alternativas)?res.alternativas:[]).map(String).filter(x=>byId[x]&&x!==id).slice(0,2);
-    const it=byId[id];
-    if(it&&conf!=="baixa"){ showItem(it,true,photoBanner(lastUrl,res,conf)); }
-    else{
-      const chips=[it,...alts.map(x=>byId[x])].filter(Boolean).slice(0,3);
-      const body=`<small>O que vi na foto</small><b>${esc(res.objeto||"Não consegui identificar")}</b>
-        <small>${esc(res.pergunta||"Tente uma foto mais próxima, com boa luz e um objeto por vez.")}</small>`;
-      photoMsg(lastUrl,chips.length?"É algum destes?":"Não reconheci com segurança",body,chips,chips.length?"":`<p style="margin:0">Sem certeza, o LIMPA! não chuta. Digite o nome ou pergunte à Central 156:</p>${fallbackHtml()}`);
-    }
+    mostrarResultadoFoto(interpretarLocal(rank),"local");
   }catch(err){
-    if(ctl.signal.aborted&&err&&err.name==="AbortError") return photoMsg(lastUrl,"Análise interrompida","<small>Cancelada ou demorou mais de 15 s. Nada foi salvo.</small>",[]);
-    photoMsg(lastUrl,"Não foi possível analisar a foto",`<small>${ERR_FOTO.rede}</small>`,[]);
-  }
+    if(ctl.signal.aborted) return;
+    photoMsg(lastUrl,"Não consegui analisar a foto agora",
+      `<small>O reconhecimento no aparelho precisa de internet na primeira vez (cerca de 22 MB). ${esc(ERR_FOTO.rede)}</small><small>Escolha abaixo ou digite o nome.</small>`,
+      ["pet","lata","vidro","longavida","pote","papelao"].map(i=>byId[i]).filter(Boolean));
+  }finally{ clipProg=null; URL.revokeObjectURL(url); }
 });
 
 /* =====================================================================
-   CÓDIGO DE BARRAS — "desrotular" a embalagem (ideia do Desrotulando)
+   CÓDIGO DE BARRAS / QR CODE — "desrotular" a embalagem (ideia do Desrotulando)
    Câmera ao vivo com BarcodeDetector (Chrome Android) ou ZXing (reserva).
-   O código é consultado no Open Food Facts (base aberta e colaborativa),
-   que informa o material de cada parte da embalagem. O destino de cada
-   parte vem sempre da base LIMPA!/DMLU, nunca de fora.
+   O código é consultado no Open Food Facts (base aberta e colaborativa).
+   Se o cadastro não informa o material, o app deduz a embalagem PROVÁVEL pelo
+   tipo de produto e pede confirmação. O destino sempre vem da base LIMPA!/DMLU.
    ===================================================================== */
 let scanStream=null, scanLoop=null, zxReader=null, scanning=false;
-function loadScript(src){return new Promise((ok,ko)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=ko;document.head.appendChild(s)})}
 async function openScanner(){
   $("#scan").hidden=false; $("#scanCode").value=""; $("#scanMsg").textContent="Iniciando a câmera…"; scanning=true;
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.isSecureContext){
-    $("#scanMsg").textContent="A câmera ao vivo precisa do link https. Digite os números do código abaixo."; return;
+    $("#scanMsg").textContent="A câmera ao vivo precisa do link https. Digite os números do código abaixo ou use 📷."; return;
   }
   try{
     scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}},audio:false});
   }catch(e){
-    $("#scanMsg").textContent=e&&e.name==="NotAllowedError"?"Permissão da câmera negada. Libere nas configurações do Chrome ou digite o código.":"Não consegui abrir a câmera. Digite os números do código abaixo.";
+    $("#scanMsg").textContent=e&&e.name==="NotAllowedError"?"Permissão da câmera negada. Libere nas configurações do Chrome ou digite o código.":"Não consegui abrir a câmera. Digite os números do código ou use 📷.";
     return;
   }
   if(!scanning){stopScanner();return}
   const v=$("#scanVideo"); v.srcObject=scanStream; try{await v.play()}catch(e){}
-  $("#scanMsg").textContent="Centralize o código de barras na moldura";
-  let ok=false;
-  if("BarcodeDetector" in window){
+  $("#scanMsg").textContent="Centralize o código de barras ou o QR Code na moldura";
+  const det=await getDetector();
+  if(det){
+    const tick=async()=>{
+      if(!scanning) return;
+      try{const r=await det.detect(v); if(r&&r.length){const pref=r.find(x=>extrairGTIN(x.rawValue))||r[0]; return found(pref.rawValue)}}catch(e){}
+      scanLoop=setTimeout(tick,220);
+    };
+    tick();
+  }else{
     try{
-      const fm=await BarcodeDetector.getSupportedFormats();
-      const want=["ean_13","ean_8","upc_a","upc_e"].filter(x=>fm.includes(x));
-      if(want.length){
-        const det=new BarcodeDetector({formats:want}); ok=true;
-        const tick=async()=>{
-          if(!scanning) return;
-          try{const r=await det.detect(v); if(r&&r[0]&&r[0].rawValue){return found(r[0].rawValue)}}catch(e){}
-          scanLoop=setTimeout(tick,250);
-        };
-        tick();
-      }
-    }catch(e){}
-  }
-  if(!ok){
-    try{
-      if(!window.ZXing) await loadScript("https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js");
-      const hints=new Map(); hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,ZXing.BarcodeFormat.UPC_A,ZXing.BarcodeFormat.UPC_E]);
-      zxReader=new ZXing.BrowserMultiFormatReader(hints);
+      const Z=await zxing();
+      zxReader=new Z.BrowserMultiFormatReader(zxHints(Z));
       zxReader.decodeFromStream(scanStream,v,(res)=>{ if(res&&scanning) found(res.getText()); });
-    }catch(e){ $("#scanMsg").textContent="Leitura automática indisponível neste aparelho. Digite os números do código abaixo."; }
+    }catch(e){ $("#scanMsg").textContent="Leitura automática indisponível neste aparelho. Digite os números do código ou use 📷."; }
   }
 }
 function stopScanner(){
@@ -960,23 +1177,36 @@ function stopScanner(){
   if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}
   const v=$("#scanVideo"); v.srcObject=null; $("#scan").hidden=true;
 }
-function found(code){ if(!scanning) return; try{navigator.vibrate&&navigator.vibrate(80)}catch(e){} stopScanner(); lookupBarcode(code,null); }
+function found(raw){ if(!scanning) return; try{navigator.vibrate&&navigator.vibrate(80)}catch(e){} stopScanner(); tratarCodigo(raw,null); }
 $("#scanBtn").addEventListener("click",openScanner);
 $("#scanClose").addEventListener("click",stopScanner);
+$("#scanFoto").addEventListener("click",()=>{stopScanner();preCarregar();$("#cam").click()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#scan").hidden) stopScanner()});
 $("#scanForm").addEventListener("submit",e=>{e.preventDefault();const c=$("#scanCode").value.replace(/\D/g,"");if(c.length<8){$("#scanMsg").textContent="O código tem de 8 a 14 números.";return}stopScanner();lookupBarcode(c,null)});
 
 const OFF_BASES=["https://world.openfoodfacts.org","https://world.openbeautyfacts.org","https://world.openproductsfacts.org"];
-const OFF_FIELDS="product_name,product_name_pt,generic_name_pt,brands,packagings,packaging_tags,packaging_materials_tags,packaging_shapes_tags,image_front_small_url,categories_tags";
+const OFF_FIELDS="product_name,product_name_pt,generic_name_pt,brands,quantity,packaging,packaging_text_pt,packagings,packaging_tags,packaging_materials_tags,packaging_shapes_tags,image_front_small_url,categories_tags";
+async function fetchJSON(url,ms){
+  const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),ms);
+  try{ const r=await fetch(url,{signal:ctl.signal}); return {ok:r.ok,status:r.status,j:r.ok?await r.json():null}; } finally{ clearTimeout(t); }
+}
 async function fetchProduto(code){
+  const variantes=[...new Set([code, code.length===14&&code[0]==="0"?code.slice(1):null, code.length===12?"0"+code:null].filter(Boolean))];
+  let falhouRede=0, tentativas=0;
   for(const base of OFF_BASES){
-    const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),8000);
-    try{
-      const r=await fetch(`${base}/api/v2/product/${encodeURIComponent(code)}.json?fields=${OFF_FIELDS}`,{signal:ctl.signal});
-      if(r.ok){const j=await r.json(); if(j&&j.status===1&&j.product) return {p:j.product,base};}
-    }catch(e){ if(base===OFF_BASES[0]) {clearTimeout(t); throw e;} }
-    finally{clearTimeout(t)}
+    for(const c of variantes){
+      for(let tentativa=0;tentativa<2;tentativa++){
+        tentativas++;
+        try{
+          const r=await fetchJSON(`${base}/api/v2/product/${encodeURIComponent(c)}.json?fields=${OFF_FIELDS}`,8000);
+          if(r.j&&r.j.status===1&&r.j.product) return {p:r.j.product,base,code:c};
+          if(r.status>=500){ falhouRede++; await new Promise(ok=>setTimeout(ok,1200)); continue; }
+          break;
+        }catch(e){ falhouRede++; if(tentativa===0) await new Promise(ok=>setTimeout(ok,1200)); }
+      }
+    }
   }
+  if(falhouRede===tentativas) throw new Error("rede");
   return null;
 }
 const SHAPE_PT={bottle:"Garrafa",can:"Lata",jar:"Pote",pot:"Pote",tub:"Pote",box:"Caixa",lid:"Tampa",cap:"Tampa","bottle-cap":"Tampa",seal:"Lacre",
@@ -992,7 +1222,7 @@ function matPT(m){
   for(const [re,l] of tab) if(re.test(s)) return l;
   return s?s.replace(/-/g," "):"Material não informado";
 }
-// Material + formato → item da base LIMPA! (o destino sempre vem da base)
+// Material + formato (dados do Open Food Facts) → item da base LIMPA!
 function mapPart(material,shape){
   const m=slug(material), sh=slug(shape);
   const isLid=/lid|cap|seal|cork/.test(sh);
@@ -1012,7 +1242,7 @@ function mapPart(material,shape){
     if(/cup/.test(sh)) return "copo";
     return "pote";
   }
-  if(!m){ // sem material: só o formato
+  if(!m){
     if(/can/.test(sh)) return "lata";
     if(/brick|drink-carton/.test(sh)) return "longavida";
   }
@@ -1039,52 +1269,100 @@ function partesDoProduto(p){
   const seen=new Set();
   return out.filter(x=>{const k=x.forma+"|"+x.mat;if(seen.has(k))return false;seen.add(k);return true});
 }
+// Quando o cadastro não traz o material: deduz a embalagem PROVÁVEL pelo nome, quantidade e categoria.
+// Devolve opções (a primeira é a mais provável); a pessoa confirma tocando na certa.
+function mlDe(q){
+  const m=String(q||"").toLowerCase().replace(",",".").match(/(\d+(?:\.\d+)?)\s*(ml|l|lt|lts|litros?)(?![a-z])/);
+  if(!m) return null; return m[2]==="ml"?+m[1]:Math.round(+m[1]*1000);
+}
+function inferirEmbalagem(p){
+  const cats=(p.categories_tags||[]).join(" ");
+  const bruto=[p.product_name_pt,p.product_name,p.generic_name_pt,p.packaging,p.packaging_text_pt,p.quantity].filter(Boolean).join(" ");
+  const t=" "+norm(bruto)+" ";
+  const ml=mlDe(p.quantity)||mlDe(bruto);
+  const has=re=>re.test(t), cat=re=>re.test(cats);
+  const bebida=cat(/beverages|sodas|beers|waters|juices|nectars|energy-drinks|iced-teas/)||has(/ (refrigerante|cerveja|suco|agua|energetico|cha gelado|refresco) /);
+  const R=(forma,mat,...ops)=>({forma,mat,opcoes:ops});
+  if(has(/ capsulas? /)) return R("Cápsula","Plástico ou alumínio","capsula");
+  // lata com volume em ml/L é bebida (alumínio); conserva costuma vir em gramas (aço)
+  if(has(/ (lata|latinha|lt) /)) return (bebida||ml)?R("Lata","Alumínio","lata"):R("Lata","Aço","conserva","lata");
+  if(has(/ (long neck|garrafa de vidro|vidro|retornavel) /)) return R("Garrafa","Vidro","vidro");
+  if(has(/ (pet|garrafa) /)) return R("Garrafa","Plástico PET","pet");
+  if(has(/ (longa vida|uht|tetra pak|caixinha) /)) return R("Caixinha","Longa vida","longavida");
+  if(cat(/beers/)) return ml&&ml<=473?R("Lata","Alumínio","lata","vidro"):R("Garrafa","Vidro","vidro","lata");
+  if(cat(/sodas|waters|energy-drinks/)) return ml&&ml<=355?R("Lata","Alumínio","lata","pet"):R("Garrafa","Plástico PET","pet","lata");
+  if(bebida&&ml&&!cat(/milks|juices|nectars/)) return ml<=355?R("Lata","Alumínio","lata","vidro"):(ml>=1000?R("Garrafa","Plástico PET","pet","longavida"):R("Garrafa","PET ou vidro","pet","vidro","lata"));
+  if(cat(/milk-powders|powdered/)||has(/ leite em po /)) return R("Lata ou pacote","Aço ou plástico metalizado","conserva","salgadinho");
+  if(cat(/condensed|creams|canned|preserves/)||has(/ (conserva|atum|sardinha|leite condensado|creme de leite|milho verde|ervilha|seleta) /)) return R("Lata ou caixinha","Aço ou longa vida","conserva","longavida");
+  if(cat(/milks|plant-based-milks|dairy-drinks/)) return R("Caixinha","Longa vida","longavida","pet");
+  if(cat(/juices|nectars/)) return R("Caixinha ou garrafa","Longa vida, PET ou vidro","longavida","pet","vidro");
+  if(cat(/yogurts|margarines|spreads|cream-cheeses|ice-creams|fermented-milk|desserts/)||has(/ (iogurte|margarina|requeijao|sorvete|manteiga) /)) return R("Pote","Plástico","pote");
+  if(cat(/chips|crisps|snacks|biscuits|cookies|crackers|wafers|chocolates|candies|confectioneries/)||has(/ (salgadinho|biscoito|bolacha|wafer|batata palha|chocolate|bala|bombom|snack) /)) return R("Pacote","Plástico metalizado","salgadinho","papelao");
+  if(cat(/coffees/)) return R("Pacote","Plástico metalizado","salgadinho","pote");
+  if(cat(/breakfast-cereals|cereals/)||has(/ (caixa|cx|cereal|sabao em po) /)) return R("Caixa","Papelão","papelao","sacola");
+  if(cat(/rices|pulses|beans|sugars|flours|pastas|salts/)||has(/ (arroz|feijao|acucar|farinha|macarrao|sal) /)) return R("Pacote","Plástico ou papel","sacola","papel");
+  if(bebida) return R("Garrafa, lata ou caixinha","Não informado","pet","lata","longavida","vidro");
+  return null;
+}
+function linhaParte(forma,mat,it,rotulo){
+  const cor=it.bin?BINS[it.bin].hex:(it.station||"#1D3B5C");
+  return `<button type="button" class="part" data-id="${esc(it.id)}"><i style="background:${cor}"></i><div><b>${esc(forma)} · ${esc(mat)}</b><small>${rotulo?`<b style="display:inline;font-size:.78rem">${esc(rotulo)}</b> · `:""}${esc(it.n)} → ${esc(destinoCurto(it))}</small></div><span class="go2">Ver ›</span></button>`;
+}
 async function lookupBarcode(code,photoUrl){
   goConsultar();
-  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">🏷️</div><div style="min-width:0"><h2>Desrotulando ${esc(code)}…</h2><span class="pill eco">Código de barras</span></div></div>
+  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">${lp("identificar")}</div><div style="min-width:0"><h2>Desrotulando ${esc(code)}…</h2><span class="pill eco">Código de barras</span></div></div>
     <div class="r-body"><div><span class="spin" aria-hidden="true"></span> Consultando a embalagem na base aberta Open Food Facts</div></div>`;
   scrollToResult();
   let r;
   try{ r=await fetchProduto(code); }
-  catch(e){ return barcodeMsg(code,photoUrl,"Sem conexão para consultar o código","Confira a internet e tente de novo, ou escolha o tipo de embalagem abaixo.",null); }
-  if(!r) return barcodeMsg(code,photoUrl,"Produto ainda não cadastrado","Este código não está na base aberta. Escolha o tipo de embalagem abaixo ou fotografe o resíduo.",null);
+  catch(e){ return barcodeMsg(code,photoUrl,"A base de produtos não respondeu","O Open Food Facts está fora do ar ou sem internet. Tire uma foto da embalagem que o Limpinho reconhece, ou escolha abaixo.",null); }
+  if(!r) return barcodeMsg(code,photoUrl,"Produto ainda não cadastrado","Este código não está na base aberta. Tire uma foto da embalagem que o Limpinho reconhece, ou escolha abaixo.",null);
   const p=r.p;
   const nome=p.product_name_pt||p.product_name||p.generic_name_pt||"Produto sem nome";
   const marca=(p.brands||"").split(",")[0].trim();
   const partes=partesDoProduto(p);
   const conhecidas=partes.filter(x=>x.id&&byId[x.id]);
-  if(!conhecidas.length) return barcodeMsg(code,photoUrl,nome+(marca?` · ${marca}`:""),"Encontrei o produto, mas a embalagem ainda não tem o material informado. Escolha o tipo de embalagem abaixo:",r);
-  const linhas=partes.map(x=>{
-    const it=x.id&&byId[x.id];
-    if(!it) return `<div class="part" style="cursor:default"><i style="background:#ccc"></i><div><b>${esc(x.forma)} · ${esc(x.mat)}</b><small>Sem regra segura na base: confira pelo 156</small></div><span></span></div>`;
-    const cor=it.bin?BINS[it.bin].hex:(it.station||"#1D3B5C");
-    return `<button type="button" class="part" data-id="${esc(it.id)}"><i style="background:${cor}"></i><div><b>${esc(x.forma)} · ${esc(x.mat)}</b><small>${esc(destinoCurto(it))}</small></div><span class="go2">Ver ›</span></button>`;
-  }).join("");
+  let linhas, pill, aviso;
+  if(conhecidas.length){
+    pill="Embalagem desrotulada";
+    linhas=partes.map(x=>{
+      const it=x.id&&byId[x.id];
+      if(!it) return `<div class="part" style="cursor:default"><i style="background:#ccc"></i><div><b>${esc(x.forma)} · ${esc(x.mat)}</b><small>Sem regra segura na base: confira pelo 156</small></div><span></span></div>`;
+      return linhaParte(x.forma,x.mat,it,"");
+    }).join("");
+    aviso=`<div class="tipbox">${lp("dicas")}<div><b>Separe antes de descartar</b>Esvazie e tire o excesso de comida. Partes recicláveis vão juntas no saco da Coleta Seletiva; toque numa parte para ver como preparar.</div></div>`;
+  }else{
+    const inf=inferirEmbalagem(p);
+    if(!inf) return barcodeMsg(code,photoUrl,nome+(marca?` · ${marca}`:""),"Encontrei o produto, mas o cadastro não informa a embalagem. Tire uma foto da embalagem que o Limpinho reconhece, ou escolha abaixo.",r);
+    pill="Embalagem provável";
+    linhas=inf.opcoes.filter(id=>byId[id]).map((id,i)=>linhaParte(inf.forma,inf.mat,byId[id],i===0?"Mais provável":"Ou, se for")).join("");
+    aviso=`<div class="tipbox">${lp("pensando")}<div><b>Confira a embalagem</b>O cadastro deste produto não informa o material. Pelo tipo de produto, o Limpinho deduziu as opções acima: toque na que combina com a sua embalagem, ou tire uma foto para ele conferir.</div></div>`;
+  }
   const img=photoUrl||(/^https:\/\//.test(p.image_front_small_url||"")?p.image_front_small_url:"");
-  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">🏷️</div><div style="min-width:0"><h2>${esc(nome)}</h2><span class="pill sel">Embalagem desrotulada</span></div></div>
+  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">${lp(conhecidas.length?"ola":"identificar")}</div><div style="min-width:0"><h2>${esc(nome)}</h2><span class="pill sel">${pill}</span></div></div>
     <div class="r-body">
-      <div class="ai">${img?`<img src="${esc(img)}" alt="">`:`<div class="ph" aria-hidden="true">📦</div>`}<div style="min-width:0"><small>Código ${esc(code)}</small><b>${esc(marca||"Marca não informada")}</b><small>${partes.length} parte${partes.length===1?"":"s"} da embalagem</small></div></div>
+      <div class="ai">${img?`<img src="${esc(img)}" alt="">`:`<div class="ph" aria-hidden="true">📦</div>`}<div style="min-width:0"><small>Código ${esc(code)}</small><b>${esc(marca||"Marca não informada")}</b><small>${esc(p.quantity||"")}</small></div></div>
       <div class="blk"><h3>${icoBox}Onde vai cada parte</h3><div class="parts">${linhas}</div></div>
-      <div class="know"><b>Separe antes de descartar</b>Esvazie e tire o excesso de comida. Partes recicláveis vão juntas no saco da Coleta Seletiva; toque numa parte para ver como preparar.</div>
-      <div class="r-actions"><button class="btn primary" type="button" id="scanAgain">Ler outro código</button><button class="btn ghost" type="button" id="photoAgain">Tirar foto</button></div>
-      <div class="src">Embalagem: <a href="${r.base}/product/${encodeURIComponent(code)}" target="_blank" rel="noopener">Open Food Facts</a> (base aberta e colaborativa, pode ter erros). Destino: base LIMPA! com fontes do DMLU, consultada em ${DATA_RES}. Na dúvida, vale a Central 156.</div>
+      ${aviso}
+      <div class="r-actions"><button class="btn primary" type="button" id="scanAgain">Ler outro código</button><button class="btn ghost" type="button" id="photoAgain">📷 Fotografar a embalagem</button></div>
+      <div class="src">Embalagem: <a href="${r.base}/product/${encodeURIComponent(r.code)}" target="_blank" rel="noopener">Open Food Facts</a> (base aberta e colaborativa, pode ter erros). Destino: base LIMPA! com fontes do DMLU, consultada em ${DATA_RES}. Na dúvida, vale a Central 156.</div>
     </div>`;
   $("#scanAgain").addEventListener("click",openScanner);
-  $("#photoAgain").addEventListener("click",()=>$("#cam").click());
+  $("#photoAgain").addEventListener("click",()=>{preCarregar();$("#cam").click()});
 }
 function barcodeMsg(code,photoUrl,title,txt,r){
   const chips=["pet","pote","lata","vidro","longavida","papelao","salgadinho","isopor"].map(i=>byId[i]).filter(Boolean);
-  const link=r?`<a href="${r.base}/product/${encodeURIComponent(code)}" target="_blank" rel="noopener">Ver no Open Food Facts</a>`:`<a href="https://world.openfoodfacts.org/cgi/product.pl?code=${encodeURIComponent(code)}" target="_blank" rel="noopener">Cadastrar no Open Food Facts</a>`;
-  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">🏷️</div><div style="min-width:0"><h2>${esc(title)}</h2><span class="pill eco">Código ${esc(code)}</span></div></div>
+  const link=r?`<a href="${r.base}/product/${encodeURIComponent(r.code)}" target="_blank" rel="noopener">Ver no Open Food Facts</a>`:`<a href="https://world.openfoodfacts.org/cgi/product.pl?code=${encodeURIComponent(code)}" target="_blank" rel="noopener">Cadastrar no Open Food Facts</a>`;
+  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">${lp("pensando")}</div><div style="min-width:0"><h2>${esc(title)}</h2><span class="pill eco">Código ${esc(code)}</span></div></div>
     <div class="r-body">
       ${photoUrl?`<div class="ai"><img src="${photoUrl}" alt="Sua foto"><div><small>Código lido na sua foto</small><b>${esc(code)}</b></div></div>`:""}
       <p style="margin:0">${esc(txt)}</p>
+      <div class="r-actions"><button class="btn amber" type="button" id="photoAgain">📷 Fotografar a embalagem</button><button class="btn ghost" type="button" id="scanAgain">Ler outro código</button></div>
       ${chipsHtml(chips)}
-      <div class="r-actions"><button class="btn primary" type="button" id="scanAgain">Ler outro código</button><button class="btn ghost" type="button" id="photoAgain">Tirar foto</button></div>
       <div class="src">Embalagem: ${link} (base aberta e colaborativa). Sem regra segura, o LIMPA! não chuta: na dúvida, Central 156.</div>
     </div>`;
   $("#scanAgain").addEventListener("click",openScanner);
-  $("#photoAgain").addEventListener("click",()=>$("#cam").click());
+  $("#photoAgain").addEventListener("click",()=>{preCarregar();$("#cam").click()});
 }
 
 /* ---------- Compartilhar (link + QR Code) ---------- */
@@ -1110,8 +1388,15 @@ if(/FBAN|FBAV|Instagram|Line\/|; wv\)/i.test(navigator.userAgent)) $("#inApp").h
 
 /* ---------- Início: carrega a base (JSON) ---------- */
 async function carregarJSON(url){const r=await fetch(url,{cache:"no-cache"});if(!r.ok) throw new Error(url+" "+r.status);return r.json()}
+// Ganchos para os testes automáticos (testes/teste-navegador.html); não expõem dados.
+window.LIMPA_TESTE={extrairGTIN,inferirEmbalagem,mapPart,mlDe};
+$("#ctx").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-acao]"); if(!b) return;
+  const a=b.dataset.acao;
+  if(a==="foto"){preCarregar();$("#cam").click()} else location.hash=a;
+});
 async function init(){
-  renderScore(); route();
+  pintarLimpinhos(); renderScore(); route();
   try{
     const [res,eco]=await Promise.all([carregarJSON("data/residuos.json"),carregarJSON("data/ecopontos.json")]);
     ITEMS=res.itens||[]; ITEMS.forEach(it=>{it._k=norm(it.n+" "+(it.s||""))});
