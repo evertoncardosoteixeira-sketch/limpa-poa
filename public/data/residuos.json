@@ -1,0 +1,907 @@
+{
+ "consultado_em": "2026-11-25",
+ "legenda": {
+  "t": "sel=Coleta Seletiva | org=Orgânico | rej=Rejeito | esp=Descarte especial | eco=Ecoponto ou 156",
+  "bin": "cor CONAMA 275/2001: papel, plastico, vidro, metal, organico, rejeito, perigoso, saude, madeira, radio",
+  "ecoF": "filtro de Ecopontos: all | ele | gesso",
+  "d156": "oferece rascunho para a Central 156",
+  "s": "sinônimos de busca",
+  "src": "chaves de fontes.md"
+ },
+ "itens": [
+  {
+   "id": "filtro",
+   "n": "Filtro de café com borra",
+   "e": "☕",
+   "t": "org",
+   "bin": "organico",
+   "s": "filtro papel cafe coado borra po de cafe coador",
+   "prep": [
+    "Deixe escorrer bem o líquido.",
+    "Coloque no saco do orgânico ou na composteira, com filtro e tudo.",
+    "Papel sujo de comida não vai na seletiva."
+   ],
+   "tip": [
+    "Parece papel, mas é orgânico",
+    "Esse é o tipo de dúvida que mais contamina a coleta seletiva. Foi o primeiro teste do LIMPA!"
+   ]
+  },
+  {
+   "id": "pet",
+   "n": "Garrafa PET",
+   "e": "🧴",
+   "t": "sel",
+   "bin": "plastico",
+   "s": "garrafa plastica refrigerante agua pet garrafinha",
+   "prep": [
+    "Esvazie e, se ficou resto, dê uma enxaguada rápida.",
+    "Amasse para ocupar menos espaço.",
+    "A tampa pode ir junto."
+   ],
+   "tip": [
+    "Garrafa na rua vira alagamento",
+    "Com a chuva, garrafas descem para o bueiro e ajudam a entupir a rede pluvial."
+   ]
+  },
+  {
+   "id": "pote",
+   "n": "Pote de iogurte ou margarina",
+   "e": "🥛",
+   "t": "sel",
+   "bin": "plastico",
+   "s": "pote plastico iogurte margarina requeijao sorvete embalagem plastica",
+   "prep": [
+    "Tire o excesso com colher ou guardanapo. O guardanapo sujo vai no orgânico.",
+    "Não precisa lavar com detergente, só tirar o grosso.",
+    "Separe a tampa de alumínio, que também vai na seletiva."
+   ],
+   "tip": [
+    "Comida estraga o saco inteiro",
+    "Embalagem com resto de alimento pode fazer o lote todo virar rejeito na triagem."
+   ]
+  },
+  {
+   "id": "sacola",
+   "n": "Sacola plástica",
+   "e": "🛍️",
+   "t": "sel",
+   "bin": "plastico",
+   "s": "sacola sacolinha saco plastico mercado",
+   "prep": [
+    "Reutilize antes de descartar.",
+    "Junte várias sacolas dentro de uma só."
+   ],
+   "tip": [
+    "Dica rápida",
+    "Use uma sacola como o próprio saco da sua seletiva."
+   ]
+  },
+  {
+   "id": "isopor",
+   "n": "Isopor (bandeja ou caixa)",
+   "e": "🧊",
+   "t": "sel",
+   "bin": "plastico",
+   "s": "isopor eps bandeja de carne marmita isopor caixa isopor",
+   "prep": [
+    "Tire os restos de comida.",
+    "Bandeja de carne: lave e deixe secar.",
+    "Quebre peças grandes para caber no saco."
+   ],
+   "tip": [
+    "Isopor é plástico",
+    "A Carta de Serviços de Porto Alegre lista o isopor entre os itens da coleta seletiva."
+   ]
+  },
+  {
+   "id": "copo",
+   "n": "Copo descartável",
+   "e": "🥤",
+   "t": "sel",
+   "bin": "plastico",
+   "s": "copo plastico copinho cafe agua descartavel",
+   "prep": [
+    "Esvazie.",
+    "Empilhe os copos para ocupar menos espaço."
+   ],
+   "tip": [
+    "Melhor ainda",
+    "Uma caneca no trabalho evita dezenas de copos por mês."
+   ]
+  },
+  {
+   "id": "salgadinho",
+   "n": "Embalagem de salgadinho ou biscoito",
+   "e": "🍪",
+   "t": "sel",
+   "bin": "plastico",
+   "s": "salgadinho biscoito bolacha metalizada pacote chips embalagem brilhante",
+   "prep": [
+    "Tire os farelos.",
+    "Mantenha limpa e seca."
+   ],
+   "tip": [
+    "Baixa reciclabilidade",
+    "Embalagens metalizadas vão na seletiva, mas são mais difíceis de reciclar. Quando puder, prefira embalagens simples."
+   ]
+  },
+  {
+   "id": "longavida",
+   "n": "Caixa de leite ou suco (longa vida)",
+   "e": "🧃",
+   "t": "sel",
+   "bin": "papel",
+   "s": "longa vida tetra pak caixinha leite suco caixa de leite",
+   "prep": [
+    "Esvazie e enxague rapidamente.",
+    "Abra e achate a caixa."
+   ],
+   "tip": [
+    "Material em camadas",
+    "Papel, plástico e alumínio juntos. Vai na seletiva e é separado na reciclagem."
+   ]
+  },
+  {
+   "id": "papelao",
+   "n": "Papelão e caixas",
+   "e": "📦",
+   "t": "sel",
+   "bin": "papel",
+   "s": "papelao caixa de papelao caixa encomenda caixa sapato",
+   "prep": [
+    "Desmonte e achate as caixas.",
+    "Mantenha seco: papelão molhado perde valor."
+   ],
+   "tip": [
+    "No comércio",
+    "Caixas desmontadas e amarradas facilitam o trabalho dos catadores e das cooperativas."
+   ]
+  },
+  {
+   "id": "papel",
+   "n": "Papel, jornal e revista",
+   "e": "📰",
+   "t": "sel",
+   "bin": "papel",
+   "s": "papel folha jornal revista caderno papel escritorio envelope",
+   "prep": [
+    "Mantenha seco e limpo.",
+    "Não precisa tirar grampos."
+   ],
+   "tip": [
+    "Papel sujo não",
+    "Papel com gordura, papel higiênico e guardanapo usado vão no orgânico ou rejeito."
+   ]
+  },
+  {
+   "id": "pizzalimpa",
+   "n": "Caixa de pizza (parte limpa)",
+   "e": "🍕",
+   "t": "sel",
+   "bin": "papel",
+   "s": "caixa de pizza limpa pizza papelao tampa da pizza",
+   "prep": [
+    "Rasgue e separe a parte limpa, que vai na seletiva.",
+    "A parte engordurada vai no orgânico."
+   ],
+   "tip": [
+    "Meio a meio",
+    "A Carta de Serviços aceita caixa de pizza sem gordura na seletiva."
+   ]
+  },
+  {
+   "id": "pizzasuja",
+   "n": "Caixa de pizza engordurada",
+   "e": "🍕",
+   "t": "org",
+   "bin": "organico",
+   "s": "caixa de pizza suja engordurada gordura pizza",
+   "prep": [
+    "Separe as partes limpas para a seletiva, se houver.",
+    "A parte com gordura e restos vai no saco do orgânico."
+   ],
+   "tip": [
+    "Gordura contamina",
+    "Papel engordurado não é reciclado e ainda suja os outros recicláveis do saco."
+   ]
+  },
+  {
+   "id": "caixaovo",
+   "n": "Caixa de ovo de papelão",
+   "e": "🥚",
+   "t": "sel",
+   "bin": "papel",
+   "s": "caixa de ovo bandeja de ovo",
+   "prep": [
+    "Retire cascas e restos."
+   ],
+   "tip": [
+    "Reaproveite",
+    "Caixa de ovo serve de sementeira na horta da escola."
+   ]
+  },
+  {
+   "id": "lata",
+   "n": "Lata de alumínio",
+   "e": "🥫",
+   "t": "sel",
+   "bin": "metal",
+   "s": "lata latinha aluminio refrigerante cerveja",
+   "prep": [
+    "Esvazie.",
+    "Amasse."
+   ],
+   "tip": [
+    "Recicla de novo e de novo",
+    "O alumínio pode ser reciclado várias vezes sem perder qualidade."
+   ]
+  },
+  {
+   "id": "conserva",
+   "n": "Lata de conserva (aço)",
+   "e": "🥫",
+   "t": "sel",
+   "bin": "metal",
+   "s": "lata conserva milho ervilha atum sardinha leite em po lata de aco",
+   "prep": [
+    "Tire os restos de alimento.",
+    "Dobre a tampa cortante para dentro, para não ferir ninguém."
+   ],
+   "tip": [
+    "Cuidado com quem coleta",
+    "Bordas cortantes machucam catadores e triadores."
+   ]
+  },
+  {
+   "id": "tampinha",
+   "n": "Tampinhas e lacres de metal",
+   "e": "🔩",
+   "t": "sel",
+   "bin": "metal",
+   "s": "tampinha tampa metal lacre chapinha",
+   "prep": [
+    "Junte dentro de uma lata ou garrafa PET e feche.",
+    "Soltas, se perdem na triagem."
+   ],
+   "tip": [
+    "Pequeno conta",
+    "Itens pequenos escapam das esteiras de triagem quando vão soltos."
+   ]
+  },
+  {
+   "id": "aluminio",
+   "n": "Papel-alumínio e marmita de alumínio",
+   "e": "🍱",
+   "t": "sel",
+   "bin": "metal",
+   "s": "papel aluminio marmitex quentinha forma aluminio",
+   "prep": [
+    "Limpe os restos de comida.",
+    "Amasse em bola."
+   ],
+   "tip": [
+    "Teste rápido",
+    "Se amassar e ficar amassado, é alumínio. Se voltar, é embalagem metalizada (plástico)."
+   ]
+  },
+  {
+   "id": "vidro",
+   "n": "Garrafa e pote de vidro",
+   "e": "🍾",
+   "t": "sel",
+   "bin": "vidro",
+   "s": "vidro garrafa de vidro pote de vidro conserva vidro vinho cerveja long neck",
+   "prep": [
+    "Esvazie.",
+    "Tampas de metal ou plástico também vão na seletiva.",
+    "Embale bem para não quebrar."
+   ],
+   "tip": [
+    "Proteja quem coleta",
+    "A Carta de Serviços pede embalar o vidro para não ferir quem faz a coleta e a triagem."
+   ]
+  },
+  {
+   "id": "vidroquebrado",
+   "n": "Vidro quebrado",
+   "e": "🫙",
+   "t": "sel",
+   "bin": "vidro",
+   "s": "vidro quebrado copo quebrado caco de vidro",
+   "prep": [
+    "Embrulhe os cacos em jornal ou dentro de uma caixa.",
+    "Escreva VIDRO QUEBRADO no pacote."
+   ],
+   "tip": [
+    "Segurança primeiro",
+    "Caco solto no saco é acidente garantido para quem coleta."
+   ]
+  },
+  {
+   "id": "espelho",
+   "n": "Espelho ou vidro temperado",
+   "e": "🪞",
+   "t": "rej",
+   "bin": "rejeito",
+   "s": "espelho vidro temperado box tampo de vidro",
+   "prep": [
+    "Embrulhe bem e identifique o pacote.",
+    "Peças grandes: leve a um Ecoponto ou consulte o 156."
+   ],
+   "tip": [
+    "Vidro diferente",
+    "Espelho e vidro temperado têm composição diferente e normalmente não são reciclados junto com garrafas e potes."
+   ]
+  },
+  {
+   "id": "comida",
+   "n": "Restos de comida e cascas",
+   "e": "🍌",
+   "t": "org",
+   "bin": "organico",
+   "s": "comida resto de comida casca fruta legume organico sobras",
+   "prep": [
+    "Escorra o líquido.",
+    "Use saco bem fechado.",
+    "Melhor ainda: composteira ou minhocário."
+   ],
+   "tip": [
+    "Metade do lixo de casa",
+    "O orgânico pesa muito no aterro. Compostar reduz custo e vira adubo."
+   ]
+  },
+  {
+   "id": "erva",
+   "n": "Erva-mate do chimarrão",
+   "e": "🧉",
+   "t": "org",
+   "bin": "organico",
+   "s": "erva mate chimarrao erva usada cuia",
+   "prep": [
+    "Deixe escorrer.",
+    "Vai no orgânico ou direto na composteira."
+   ],
+   "tip": [
+    "Bom para a horta",
+    "A erva usada é ótima para compostagem e para a horta da escola."
+   ]
+  },
+  {
+   "id": "guardanapo",
+   "n": "Guardanapo e papel toalha usados",
+   "e": "🧻",
+   "t": "org",
+   "bin": "organico",
+   "s": "guardanapo papel toalha usado sujo lenco de papel",
+   "prep": [
+    "Vai junto com o orgânico."
+   ],
+   "tip": [
+    "Papel sujo é orgânico",
+    "O DMLU lista papel toalha e guardanapo sujos entre os resíduos do contêiner do orgânico."
+   ]
+  },
+  {
+   "id": "folhas",
+   "n": "Folhas e pequenas podas",
+   "e": "🍂",
+   "t": "org",
+   "bin": "organico",
+   "s": "folha folhas secas grama jardim varricao planta",
+   "prep": [
+    "Pequenas quantidades: saco do orgânico ou composteira.",
+    "Galhos e volumes grandes: Ecoponto (até 1 m³ por dia)."
+   ],
+   "tip": [
+    "Folha no bueiro",
+    "Folhas varridas para a sarjeta entopem bocas de lobo. Ensaque."
+   ]
+  },
+  {
+   "id": "higienico",
+   "n": "Papel higiênico usado",
+   "e": "🧻",
+   "t": "rej",
+   "bin": "rejeito",
+   "s": "papel higienico banheiro lixo de banheiro",
+   "prep": [
+    "Saco bem fechado, no lixo comum."
+   ],
+   "tip": [
+    "Não é reciclável",
+    "Vai sempre no rejeito."
+   ]
+  },
+  {
+   "id": "fralda",
+   "n": "Fralda e absorvente",
+   "e": "👶",
+   "t": "rej",
+   "bin": "rejeito",
+   "s": "fralda descartavel absorvente lenco umedecido",
+   "prep": [
+    "Feche bem o saco.",
+    "Nunca jogue no vaso sanitário."
+   ],
+   "tip": [
+    "Vaso não é lixeira",
+    "Fralda, absorvente e lenço umedecido entopem a rede de esgoto."
+   ]
+  },
+  {
+   "id": "bituca",
+   "n": "Bituca de cigarro",
+   "e": "🚬",
+   "t": "rej",
+   "bin": "rejeito",
+   "s": "bituca cigarro guimba ponta de cigarro",
+   "prep": [
+    "Apague bem.",
+    "Jogue no rejeito, nunca na rua ou no bueiro."
+   ],
+   "tip": [
+    "Pequena e problemática",
+    "Com a chuva, bitucas vão direto para os bueiros e para o Guaíba."
+   ]
+  },
+  {
+   "id": "chiclete",
+   "n": "Chiclete",
+   "e": "🍬",
+   "t": "rej",
+   "bin": "rejeito",
+   "s": "chiclete goma de mascar",
+   "prep": [
+    "Embrulhe em papel e coloque no rejeito."
+   ],
+   "tip": [
+    "Nunca no chão",
+    "Chiclete gruda na calçada e é difícil de limpar."
+   ]
+  },
+  {
+   "id": "escova",
+   "n": "Escova de dente",
+   "e": "🪥",
+   "t": "rej",
+   "bin": "rejeito",
+   "s": "escova de dente",
+   "prep": [
+    "Vai no rejeito."
+   ],
+   "tip": [
+    "Troque com consciência",
+    "Escovas com cabeça substituível geram menos resíduo."
+   ]
+  },
+  {
+   "id": "esponja",
+   "n": "Esponja de louça",
+   "e": "🧽",
+   "t": "rej",
+   "bin": "rejeito",
+   "s": "esponja bucha louca",
+   "prep": [
+    "Vai no rejeito."
+   ],
+   "tip": [
+    "Alternativa",
+    "A bucha vegetal pode ir para a compostagem."
+   ]
+  },
+  {
+   "id": "pet_fezes",
+   "n": "Areia de gato e cocô de pet",
+   "e": "🐾",
+   "t": "rej",
+   "bin": "rejeito",
+   "s": "areia de gato coco cachorro fezes pet animal",
+   "prep": [
+    "Saco bem fechado, no lixo comum."
+   ],
+   "tip": [
+    "Na calçada",
+    "Recolher as fezes do pet na rua também evita que a chuva leve tudo para o bueiro."
+   ]
+  },
+  {
+   "id": "capsula",
+   "n": "Cápsula de café",
+   "e": "☕",
+   "t": "rej",
+   "bin": "rejeito",
+   "s": "capsula de cafe nespresso dolce gusto",
+   "prep": [
+    "Algumas marcas recebem as cápsulas de volta nas lojas. Confira com o fabricante.",
+    "Sem esse retorno, vai no rejeito."
+   ],
+   "tip": [
+    "Logística reversa",
+    "Quando o fabricante recebe de volta, o alumínio e a borra são separados."
+   ]
+  },
+  {
+   "id": "roupa",
+   "n": "Roupas e tecidos",
+   "e": "👕",
+   "t": "rej",
+   "bin": "rejeito",
+   "s": "roupa tecido pano camiseta calca sapato toalha",
+   "prep": [
+    "Em bom estado: doe.",
+    "Rasgados e sem uso: saco fechado no rejeito."
+   ],
+   "tip": [
+    "Primeiro, reutilizar",
+    "Doação e conserto vêm antes do descarte nos 7 Rs."
+   ]
+  },
+  {
+   "id": "pilha",
+   "n": "Pilhas e baterias",
+   "e": "🔋",
+   "t": "esp",
+   "bin": "perigoso",
+   "s": "pilha bateria bateria de celular bateria notebook pilha alcalina recarregavel",
+   "where": [
+    "Devolva na loja onde comprou, numa assistência técnica ou num posto de recebimento.",
+    "Pela Lei municipal 9.851/2005, quem vende pilhas e baterias é obrigado a recebê-las de volta.",
+    "Informações gratuitas: 0800 779 4500."
+   ],
+   "prep": [
+    "Nunca no lixo comum nem na seletiva.",
+    "Guarde num pote seco até levar.",
+    "Em baterias, cubra os polos com fita para evitar curto."
+   ],
+   "tip": [
+    "Metais pesados",
+    "Pilhas têm metais que contaminam solo e água."
+   ],
+   "src": [
+    "pil"
+   ]
+  },
+  {
+   "id": "lampada",
+   "n": "Lâmpada fluorescente",
+   "e": "💡",
+   "t": "esp",
+   "bin": "perigoso",
+   "s": "lampada fluorescente lampada tubular lampada compacta lampada econômica",
+   "where": [
+    "Entregue num ponto do programa Reciclus: veja em reciclus.org.br/onde-descartar.",
+    "Os Ecopontos não recebem lâmpadas fluorescentes.",
+    "Empresas: Apliquim Brasil Recicle, Av. Pernambuco, 1.234, Navegantes."
+   ],
+   "prep": [
+    "Não quebre: contém mercúrio.",
+    "Guarde na caixa original ou embrulhe em jornal."
+   ],
+   "tip": [
+    "Se quebrar",
+    "Areje o ambiente, recolha com luvas e papel e não use aspirador."
+   ],
+   "src": [
+    "lam"
+   ]
+  },
+  {
+   "id": "remedio",
+   "n": "Remédio vencido",
+   "e": "💊",
+   "t": "esp",
+   "bin": "saude",
+   "s": "remedio medicamento vencido comprimido xarope pomada",
+   "where": [
+    "Leve a farmácias e drogarias com coletor de medicamentos (logística reversa, Decreto federal 10.388/2020).",
+    "Os Ecopontos não recebem remédio vencido."
+   ],
+   "prep": [
+    "Mantenha na embalagem.",
+    "Caixa de papel e bula limpas podem ir na seletiva.",
+    "Nunca jogue na pia ou no vaso."
+   ],
+   "tip": [
+    "Água contaminada",
+    "Remédio no esgoto chega aos rios, que o tratamento de água não remove por completo."
+   ],
+   "src": [
+    "med",
+    "udc"
+   ]
+  },
+  {
+   "id": "seringa",
+   "n": "Seringa e agulha",
+   "e": "💉",
+   "t": "esp",
+   "bin": "saude",
+   "s": "seringa agulha lanceta insulina perfurocortante",
+   "where": [
+    "Coloque em recipiente rígido e bem fechado, como uma garrafa PET grossa.",
+    "Leve a uma Unidade de Saúde ou farmácia que receba perfurocortantes. Na dúvida, pergunte ao 156."
+   ],
+   "prep": [
+    "Nunca no lixo comum solto nem na seletiva.",
+    "Não reencape a agulha."
+   ],
+   "tip": [
+    "Risco para quem coleta",
+    "Agulha solta no saco é a principal causa de acidente com catadores."
+   ],
+   "src": [
+    "med",
+    "s156"
+   ]
+  },
+  {
+   "id": "tinta",
+   "n": "Tinta, solvente e produtos químicos",
+   "e": "🎨",
+   "t": "esp",
+   "bin": "perigoso",
+   "s": "tinta solvente thinner verniz veneno inseticida produto quimico lata de tinta",
+   "where": [
+    "Lata vazia e seca vai na seletiva (metal).",
+    "Com sobra de produto, pergunte à Central 156 qual o descarte correto."
+   ],
+   "prep": [
+    "Nunca despeje na pia, no ralo ou no bueiro.",
+    "Mantenha a embalagem fechada e identificada."
+   ],
+   "tip": [
+    "Um ralo leva ao rio",
+    "O que desce pelo bueiro vai para o Guaíba sem tratamento."
+   ],
+   "src": [
+    "s156"
+   ]
+  },
+  {
+   "id": "oleo",
+   "n": "Óleo de cozinha usado",
+   "e": "🫗",
+   "t": "esp",
+   "bin": null,
+   "station": "#C79A1E",
+   "ecoF": "all",
+   "s": "oleo de cozinha oleo de fritura oleo usado gordura",
+   "where": [
+    "Entregue no Posto de Entrega de Óleo de Fritura (PEOF) dos Ecopontos.",
+    "Veja os Ecopontos abaixo."
+   ],
+   "prep": [
+    "Espere esfriar e coe.",
+    "Guarde em garrafa PET bem fechada.",
+    "Nunca na pia, no ralo ou no bueiro."
+   ],
+   "tip": [
+    "Óleo entope tudo",
+    "Na pia, o óleo gruda nos canos, entope a rede e polui a água."
+   ],
+   "src": [
+    "eco",
+    "udc"
+   ]
+  },
+  {
+   "id": "celular",
+   "n": "Celular, carregador e cabos",
+   "e": "📱",
+   "t": "esp",
+   "bin": null,
+   "station": "#3C6E91",
+   "ecoF": "ele",
+   "s": "celular smartphone carregador cabo fone eletronico tablet",
+   "where": [
+    "Leve ao Posto de Entrega de Resíduos Eletrônicos (PERE) de um Ecoponto.",
+    "Seis Ecopontos têm PERE, incluindo o do Centro."
+   ],
+   "prep": [
+    "Apague seus dados e retire o chip e o cartão de memória.",
+    "Bateria solta? Veja pilhas e baterias."
+   ],
+   "tip": [
+    "Mina urbana",
+    "Eletrônicos têm metais valiosos que podem ser recuperados."
+   ],
+   "src": [
+    "ele"
+   ]
+  },
+  {
+   "id": "computador",
+   "n": "Computador, monitor e impressora",
+   "e": "🖥️",
+   "t": "esp",
+   "bin": null,
+   "station": "#3C6E91",
+   "ecoF": "ele",
+   "s": "computador notebook monitor impressora teclado mouse eletronico tv televisao",
+   "where": [
+    "Leve ao PERE de um Ecoponto.",
+    "Grandes geradores (comércio e indústria): orientação pelo (51) 3289-6987."
+   ],
+   "prep": [
+    "Apague seus dados.",
+    "Não desmonte."
+   ],
+   "tip": [
+    "Não é lixo comum",
+    "Eletrônicos têm componentes que não podem ir para o aterro."
+   ],
+   "src": [
+    "ele"
+   ]
+  },
+  {
+   "id": "eletro",
+   "n": "Geladeira, fogão ou máquina de lavar",
+   "e": "🧺",
+   "t": "eco",
+   "bin": null,
+   "ecoF": "all",
+   "d156": true,
+   "s": "geladeira fogao maquina de lavar microondas eletrodomestico freezer",
+   "limit": "Os Ecopontos recebem eletrodomésticos gratuitamente.",
+   "prep": [
+    "Esvazie e limpe.",
+    "Prenda portas para o transporte."
+   ],
+   "tip": [
+    "Antes de descartar",
+    "Funciona? Doação ajuda outra família."
+   ],
+   "src": [
+    "eco",
+    "udc"
+   ]
+  },
+  {
+   "id": "sofa",
+   "n": "Sofá",
+   "e": "🛋️",
+   "t": "eco",
+   "bin": null,
+   "ecoF": "all",
+   "d156": true,
+   "s": "sofa poltrona estofado",
+   "limit": "Volumosos: até 1 m³ por pessoa, por dia.",
+   "prep": [
+    "Retire almofadas e capas para doação, se estiverem boas."
+   ],
+   "tip": [
+    "Calçada não é depósito",
+    "Sofá na calçada fora de hora é descarte irregular. O caminho certo é o Ecoponto ou a coleta especial do 156."
+   ]
+  },
+  {
+   "id": "colchao",
+   "n": "Colchão",
+   "e": "🛏️",
+   "t": "eco",
+   "bin": null,
+   "ecoF": "all",
+   "d156": true,
+   "s": "colchao cama box",
+   "limit": "Volumosos: até 1 m³ por pessoa, por dia.",
+   "prep": [
+    "Mantenha seco para o transporte."
+   ],
+   "tip": [
+    "Chuva estraga",
+    "Colchão molhado na rua pesa, apodrece e obstrui a passagem."
+   ]
+  },
+  {
+   "id": "moveis",
+   "n": "Móveis e madeira",
+   "e": "🪑",
+   "t": "eco",
+   "bin": "madeira",
+   "ecoF": "all",
+   "d156": true,
+   "s": "movel moveis armario guarda roupa mesa cadeira estante madeira porta",
+   "limit": "Volumosos: até 1 m³ por pessoa, por dia.",
+   "prep": [
+    "Desmonte, se possível.",
+    "Retire vidros e espelhos e embale à parte."
+   ],
+   "tip": [
+    "Desmontar ajuda",
+    "Móvel desmontado cabe no carro e economiza viagem."
+   ]
+  },
+  {
+   "id": "entulho",
+   "n": "Entulho de obra",
+   "e": "🧱",
+   "t": "eco",
+   "bin": null,
+   "ecoF": "all",
+   "d156": true,
+   "s": "entulho tijolo azulejo ceramica concreto reboco obra reforma terra",
+   "limit": "Entulho: até 0,5 m³ por pessoa, por dia.",
+   "prep": [
+    "Ensaque ou leve em caixas.",
+    "Separe madeira, metal e gesso."
+   ],
+   "tip": [
+    "Obra grande?",
+    "Acima do limite, é preciso contratar caçamba licenciada."
+   ]
+  },
+  {
+   "id": "gesso",
+   "n": "Gesso",
+   "e": "🏗️",
+   "t": "eco",
+   "bin": null,
+   "ecoF": "gesso",
+   "d156": true,
+   "s": "gesso placa de gesso drywall sanca",
+   "limit": "Gesso: até 1 m³ por pessoa, apenas em seis Ecopontos.",
+   "prep": [
+    "Mantenha separado do entulho comum."
+   ],
+   "tip": [
+    "Separado é melhor",
+    "Gesso misturado ao entulho atrapalha a reciclagem dos dois."
+   ]
+  },
+  {
+   "id": "poda",
+   "n": "Galhos e restos de poda",
+   "e": "🌳",
+   "t": "eco",
+   "bin": null,
+   "ecoF": "all",
+   "d156": true,
+   "s": "galho poda arvore tronco capina",
+   "limit": "Poda e capina: até 1 m³ por pessoa, por dia.",
+   "prep": [
+    "Corte em pedaços menores.",
+    "Amarre em feixes."
+   ],
+   "tip": [
+    "Galho na rua",
+    "Galhos na sarjeta são arrastados para os bueiros na primeira chuva."
+   ]
+  },
+  {
+   "id": "pneu",
+   "n": "Pneu",
+   "e": "🛞",
+   "t": "eco",
+   "bin": null,
+   "ecoF": "all",
+   "s": "pneu pneus borracha camara de ar",
+   "limit": "Pneus: até 4 por pessoa, por dia.",
+   "prep": [
+    "Tire a água acumulada antes de transportar."
+   ],
+   "tip": [
+    "Criadouro de mosquito",
+    "Pneu com água parada é criadouro do Aedes aegypti."
+   ]
+  },
+  {
+   "id": "sucata",
+   "n": "Sucata de ferro e metal",
+   "e": "⚙️",
+   "t": "eco",
+   "bin": "metal",
+   "ecoF": "all",
+   "s": "sucata ferro metal ferragem cano vergalhao rolamento peca de metal",
+   "limit": "Os Ecopontos recebem sucata de ferro. Peças pequenas e limpas também podem ir na seletiva.",
+   "prep": [
+    "Separe por tamanho.",
+    "Cuidado com pontas cortantes."
+   ],
+   "tip": [
+    "Metal vale",
+    "Sucata é um dos materiais mais procurados pela reciclagem."
+   ]
+  }
+ ]
+}

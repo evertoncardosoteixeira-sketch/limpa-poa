@@ -1,0 +1,1142 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>LIMPA!</title>
+<meta name="description" content="LIMPA! Sua IA para educação ambiental — consulte onde e como descartar cada resíduo em Porto Alegre. Projeto Limpa POA.">
+<meta name="theme-color" content="#13573F">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: app de uma coluna para celular — cabeçalho fixo, busca em destaque, card de resultado, navegação inferior estilo Android. */
+:root{
+  --green:#1E7F5C; --green-deep:#13573F; --amber:#E8A33D; --navy:#102A43;
+  --mint:#E8F3EE; --bg:#F6F8F5; --surface:#FFFFFF; --fg:#14231C; --muted:#5A6B63;
+  --line:#D9E4DD; --chip:#EEF4F0; --onacc:#FFFFFF; --shadow:0 1px 2px rgba(16,42,67,.06),0 6px 20px rgba(16,42,67,.07);
+  --ok:#1E7F5C; --warn:#B86E0A; --bad:#B23A2E;
+  --f-display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  /* Padrão de cores da coleta seletiva (Resolução CONAMA 275/2001) */
+  --c-papel:#1F6FD1; --c-plastico:#D63B30; --c-vidro:#2E9B4E; --c-metal:#F2C230; --c-organico:#7A4E2D;
+  --c-rejeito:#8A8F94; --c-perigoso:#F07F1A; --c-saude:#F4F4F1; --c-madeira:#1E1E1E; --c-radio:#7B4BB7;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --green:#3DBA8A; --green-deep:#2C9A70; --amber:#F0B657; --navy:#BFD3E6;
+  --mint:#14302A; --bg:#0D1613; --surface:#15211C; --fg:#E7F0EB; --muted:#9DB0A6; --line:#26362F; --chip:#1B2A24; --onacc:#06140F;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); --ok:#3DBA8A; --warn:#F0B657; --bad:#F08A7E; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --green:#3DBA8A; --green-deep:#2C9A70; --amber:#F0B657; --navy:#BFD3E6;
+  --mint:#14302A; --bg:#0D1613; --surface:#15211C; --fg:#E7F0EB; --muted:#9DB0A6; --line:#26362F; --chip:#1B2A24; --onacc:#06140F;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); --ok:#3DBA8A; --warn:#F0B657; --bad:#F08A7E; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.5;overflow-x:hidden;
+  padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--green-deep)}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:var(--green)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:8px}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+.eyebrow{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+
+/* Cabeçalho */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--green-deep);color:#fff}
+.top .wrap{display:flex;align-items:center;gap:12px;padding-block:10px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;min-width:0}
+.brand b{font-family:var(--f-display);font-weight:800;font-size:1.3rem;letter-spacing:-.01em}
+.brand b span{color:#F7C66B}
+.brand small{display:block;font-size:.72rem;opacity:.85;line-height:1.2}
+.score{margin-left:auto;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);
+  border-radius:999px;padding:5px 11px 5px 8px;font-size:.82rem;font-weight:600;white-space:nowrap;cursor:pointer;color:#fff;min-height:36px}
+.score svg{width:18px;height:18px}
+
+/* Hero de busca */
+.hero{background:var(--green-deep);color:#fff;padding-block:6px 30px;border-radius:0 0 28px 28px}
+.hero h1{font-size:clamp(1.65rem,6.4vw,2.4rem);font-weight:800;letter-spacing:-.02em;max-width:18ch}
+.hero h1 em{font-style:normal;color:#F7C66B}
+.hero p{margin:.5rem 0 1rem;opacity:.9;max-width:46ch;font-size:.95rem}
+.search{position:relative}
+.search label[for="q"]{position:absolute;left:-9999px}
+.camin{position:absolute;right:54px;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:12px;background:#E8A33D;color:#1C1404;display:grid;place-items:center;cursor:pointer}
+.camin svg{width:22px;height:22px}
+.search input{width:100%;font:inherit;font-size:1.05rem;padding:15px 102px 15px 46px;border-radius:16px;border:2px solid transparent;
+  background:var(--surface);color:var(--fg);box-shadow:0 8px 30px rgba(0,0,0,.18);-webkit-appearance:none;appearance:none}
+.search input:focus{outline:none;border-color:var(--amber)}
+.search .ico{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:22px;height:22px;color:var(--muted);pointer-events:none}
+.search .go{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:12px;border:0;background:var(--green);color:var(--onacc);display:grid;place-items:center;cursor:pointer}
+.search .go svg{width:20px;height:20px}
+.sugs{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--surface);color:var(--fg);border-radius:14px;box-shadow:var(--shadow);
+  border:1px solid var(--line);overflow:hidden;z-index:15;list-style:none;margin:0;padding:4px}
+.sugs li button{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:none;border:0;padding:10px 10px;border-radius:10px;cursor:pointer;min-height:44px}
+.sugs li button:hover,.sugs li button[aria-selected="true"]{background:var(--chip)}
+.sugs .em{font-size:1.3rem;width:28px;text-align:center}
+.sugs .tag{margin-left:auto;font-size:.72rem;font-weight:700;color:var(--muted);white-space:nowrap}
+.quick{display:flex;gap:8px;overflow-x:auto;padding:14px 0 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.quick::-webkit-scrollbar{display:none}
+.quick button{flex:none;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;border-radius:999px;padding:7px 13px;font-size:.86rem;cursor:pointer;white-space:nowrap;min-height:38px}
+.quick button:active{background:rgba(255,255,255,.22)}
+
+/* Foto e código de barras */
+.photo{margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cam{display:flex;align-items:center;gap:10px;background:#E8A33D;color:#1C1404;border-radius:16px;padding:12px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.18);border:0;text-align:left;min-height:64px}
+.cam.alt{background:#fff;color:#13573F}
+.cam svg{width:28px;height:28px;flex:none}
+.cam b{display:block;font-family:var(--f-display);font-size:.98rem;line-height:1.15}
+.cam small{display:block;font-size:.74rem;opacity:.8;line-height:1.25}
+.cam:active{transform:scale(.99)}
+.ai{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center;background:var(--chip);border-radius:14px;padding:10px}
+.ai img,.ai .ph{width:64px;height:64px;object-fit:cover;border-radius:10px;display:grid;place-items:center;font-size:2rem;background:var(--surface)}
+.ai b{font-family:var(--f-display);display:block;line-height:1.2}
+.ai small{color:var(--muted);display:block;font-size:.8rem}
+.ai .conf{display:inline-block;font-size:.72rem;font-weight:700;border-radius:999px;padding:2px 8px;margin-top:4px;background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.ai .conf.media{background:color-mix(in srgb,var(--warn) 20%,transparent);color:var(--warn)}
+.spin{width:22px;height:22px;border:3px solid var(--line);border-top-color:var(--green);border-radius:50%;animation:sp 0.9s linear infinite;display:inline-block;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Partes da embalagem (desrotular) */
+.parts{display:grid;gap:8px}
+.part{display:grid;grid-template-columns:14px 1fr auto;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;text-align:left;cursor:pointer;width:100%;min-height:52px}
+.part i{width:14px;height:14px;border-radius:4px;display:block;border:1px solid rgba(0,0,0,.2)}
+.part b{display:block;font-size:.95rem}
+.part small{display:block;color:var(--muted);font-size:.8rem}
+.part .go2{font-size:.78rem;font-weight:700;color:var(--green);white-space:nowrap}
+
+/* Leitor de código de barras */
+.scan{position:fixed;inset:0;z-index:60;background:#000;display:grid;grid-template-rows:auto 1fr auto;color:#fff}
+.scan header{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px}
+.scan header b{font-family:var(--f-display);font-size:1.05rem}
+.scan header button{margin-left:auto;background:rgba(255,255,255,.15);border:0;color:#fff;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer;min-height:44px}
+.scan .stage{position:relative;overflow:hidden}
+.scan video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.scan .reticle{position:absolute;left:50%;top:50%;width:min(80vw,340px);height:150px;transform:translate(-50%,-50%);border:3px solid #F7C66B;border-radius:16px;box-shadow:0 0 0 9999px rgba(0,0,0,.45)}
+.scan .reticle::after{content:"";position:absolute;left:8px;right:8px;top:50%;height:2px;background:#F07F1A;animation:ln 1.6s ease-in-out infinite alternate}
+@keyframes ln{from{transform:translateY(-55px)}to{transform:translateY(55px)}}
+.scan .msg{position:absolute;left:16px;right:16px;bottom:16px;text-align:center;font-size:.92rem;text-shadow:0 1px 3px rgba(0,0,0,.8)}
+.scan form{display:flex;gap:8px;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:#0b1310}
+.scan input{flex:1;min-width:0;font:inherit;font-size:1rem;padding:12px;border-radius:12px;border:0;background:#fff;color:#14231C}
+.scan form button{border:0;border-radius:12px;padding:0 16px;font-weight:700;background:#E8A33D;color:#1C1404;cursor:pointer;min-height:46px}
+
+/* Views */
+.view{padding-top:20px;display:grid;gap:22px}
+.view[hidden]{display:none!important}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+.sec-h h2{font-size:1.25rem;font-weight:700}
+
+/* Card de resultado */
+.result{background:var(--surface);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;scroll-margin-top:80px}
+.r-head{display:flex;gap:14px;align-items:center;padding:18px 18px 14px}
+.r-emoji{font-size:2.2rem;width:58px;height:58px;display:grid;place-items:center;background:var(--chip);border-radius:16px;flex:none}
+.r-head h2{font-size:1.35rem;font-weight:700;overflow-wrap:anywhere}
+.pill{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-size:.78rem;font-weight:700;padding:4px 10px;border-radius:999px;color:#fff}
+.pill.sel{background:#1E7F5C}.pill.org{background:#7A4E2D}.pill.rej{background:#5F666C}.pill.esp{background:#C8620E}.pill.eco{background:#1D3B5C}
+.r-body{display:grid;gap:16px;padding:0 18px 18px}
+.binrow{display:grid;grid-template-columns:92px 1fr;gap:14px;align-items:center;background:var(--mint);border-radius:16px;padding:12px 14px}
+.binrow svg{width:92px;height:96px}
+.binrow .k{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.binrow .v{font-family:var(--f-display);font-size:1.2rem;font-weight:700;line-height:1.2}
+.binrow p{margin:.25rem 0 0;font-size:.88rem;color:var(--muted)}
+.blk h3{font-size:1rem;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.blk h3 svg{width:18px;height:18px;color:var(--green)}
+.blk ul{margin:0;padding-left:1.15rem;display:grid;gap:5px}
+.blk li::marker{color:var(--green)}
+.know{background:color-mix(in srgb,var(--amber) 16%,var(--surface));border-radius:14px;padding:12px 14px;font-size:.93rem}
+.know b{display:block;font-family:var(--f-display);font-size:.95rem;margin-bottom:2px}
+.src{font-size:.8rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px}
+.src a{word-break:break-word}
+.r-actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:12px;padding:11px 16px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-size:.95rem;min-height:44px}
+.btn svg{width:18px;height:18px}
+.btn.primary{background:var(--green);color:var(--onacc)}
+.btn.ghost{background:var(--chip);color:var(--fg)}
+.btn.amber{background:var(--amber);color:#1C1404}
+.btn[disabled]{opacity:.7;cursor:default}
+
+/* Mini-lista de Ecopontos */
+.eco-list{display:grid;gap:10px}
+.eco{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:13px 14px;display:grid;gap:6px}
+.eco .row{display:flex;gap:8px;align-items:flex-start;justify-content:space-between}
+.eco h3{font-size:1.02rem;font-weight:700}
+.eco .addr{font-size:.9rem;color:var(--muted)}
+.eco .hrs{font-size:.84rem;font-variant-numeric:tabular-nums}
+.eco .tags{display:flex;gap:6px;flex-wrap:wrap}
+.eco .tags span{font-size:.72rem;font-weight:600;background:var(--chip);border-radius:6px;padding:2px 7px}
+.st{font-size:.74rem;font-weight:700;border-radius:999px;padding:3px 9px;white-space:nowrap;flex:none}
+.st.open{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.st.closed{background:color-mix(in srgb,var(--muted) 18%,transparent);color:var(--muted)}
+.st.reform{background:color-mix(in srgb,var(--warn) 20%,transparent);color:var(--warn)}
+.eco a.map{font-size:.86rem;font-weight:700;text-decoration:none;display:inline-flex;gap:5px;align-items:center;min-height:36px}
+.eco a.map svg{width:16px;height:16px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.filters button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 13px;font-size:.86rem;cursor:pointer;font-weight:600;min-height:40px}
+.filters button[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:var(--onacc)}
+
+/* 156 */
+.draft{display:grid;gap:8px;background:var(--chip);border-radius:14px;padding:12px}
+.draft textarea{width:100%;min-height:128px;font:inherit;font-size:.92rem;border-radius:10px;border:1px solid var(--line);padding:10px;background:var(--surface);color:var(--fg);resize:vertical}
+.draft small{color:var(--muted)}
+.mono{font-variant-numeric:tabular-nums;font-weight:700;user-select:all}
+
+/* Categorias */
+.cats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.cat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;text-align:left;cursor:pointer;display:grid;gap:4px;position:relative;overflow:hidden}
+.cat::after{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--cc)}
+.cat b{font-family:var(--f-display);font-size:1rem}
+.cat span{font-size:.8rem;color:var(--muted)}
+.cat[aria-pressed="true"]{border-color:var(--cc);box-shadow:0 0 0 2px var(--cc) inset}
+.items{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.items button{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 11px;cursor:pointer;font-size:.9rem;display:flex;gap:6px;align-items:center;min-height:42px}
+
+/* Como funciona */
+.how{background:#102A43;color:#EAF2F8;border-radius:22px;padding:18px}
+.how h2{font-size:1.2rem;margin-bottom:4px}
+.how p{margin:0 0 12px;opacity:.85;font-size:.92rem}
+.steps{display:grid;gap:10px;counter-reset:s;list-style:none;margin:0;padding:0}
+.steps li{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start;font-size:.92rem}
+.steps li::before{counter-increment:s;content:counter(s);width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:#E8A33D;color:#1C1404;font-weight:800;font-family:var(--f-display)}
+.steps b{display:block}
+.rules{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.rules span{font-size:.78rem;border:1px solid rgba(234,242,248,.3);border-radius:999px;padding:4px 10px}
+
+/* Compartilhar */
+.share{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:18px;display:grid;gap:12px}
+.share .qr{background:#fff;border-radius:14px;padding:10px;width:max-content;max-width:100%;justify-self:center}
+.share .qr svg{display:block;width:200px;height:200px}
+.share code{font-size:.82rem;word-break:break-all;background:var(--chip);border-radius:8px;padding:6px 8px;display:block}
+
+/* Cores */
+.colors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.color{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:center}
+.color svg{width:44px;height:48px}
+.color b{font-family:var(--f-display);display:block;line-height:1.15}
+.color span{font-size:.8rem;color:var(--muted);line-height:1.3;display:block}
+.note{background:var(--mint);border-radius:16px;padding:14px;font-size:.93rem}
+.note b{font-family:var(--f-display)}
+.flow2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.flow2 div{background:var(--surface);border-radius:12px;padding:10px;font-size:.86rem;border:1px solid var(--line)}
+.flow2 div b{display:block;font-size:.95rem}
+
+/* Quiz */
+.quiz{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--shadow);display:grid;gap:14px}
+.q-top{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;color:var(--muted);font-weight:600}
+.q-bar{height:6px;background:var(--chip);border-radius:9px;overflow:hidden}
+.q-bar i{display:block;height:100%;background:var(--green);width:0;transition:width .3s}
+.q-item{display:flex;gap:14px;align-items:center}
+.q-item .r-emoji{font-size:2.4rem}
+.q-item h2{font-size:1.25rem}
+.q-opts{display:grid;gap:8px}
+.q-opts button{border:2px solid var(--line);background:var(--surface);border-radius:14px;padding:12px 14px;text-align:left;cursor:pointer;font-weight:600;min-height:48px}
+.q-opts button.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,var(--surface))}
+.q-opts button.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,var(--surface))}
+.q-fb{font-size:.93rem;background:var(--mint);border-radius:12px;padding:12px}
+
+/* Trilha / pontuação */
+.level{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:8px}
+.lv-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.lv-row b{font-family:var(--f-display);font-size:1.1rem}
+.lv-bar{height:10px;border-radius:9px;background:var(--chip);overflow:hidden}
+.lv-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--amber));width:0;transition:width .4s}
+.level small{color:var(--muted)}
+
+/* Rodapé e nav */
+footer{font-size:.8rem;color:var(--muted);padding-block:26px 10px;display:grid;gap:6px}
+footer b{color:var(--fg)}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--surface);border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+.nav .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.nav a{display:grid;justify-items:center;gap:2px;padding:8px 4px 9px;font-size:.72rem;font-weight:600;color:var(--muted);text-decoration:none}
+.nav a svg{width:24px;height:24px;padding:2px 14px;box-sizing:content-box;border-radius:999px}
+.nav a[aria-current="page"]{color:var(--green)}
+.nav a[aria-current="page"] svg{background:color-mix(in srgb,var(--green) 16%,transparent)}
+.toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;z-index:40;
+  background:#102A43;color:#fff;padding:12px 16px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);width:min(92vw,420px);font-size:.93rem;
+  transition:opacity .25s,transform .25s;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast b{color:#F7C66B;font-family:var(--f-display)}
+.banner{background:#FFF4DE;color:#5A3B00;border-radius:14px;padding:10px 12px;font-size:.86rem;margin-top:12px}
+@media (min-width:640px){ .cats{grid-template-columns:repeat(3,minmax(0,1fr))} .colors{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:360px){ .photo{grid-template-columns:1fr} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important;scroll-behavior:auto!important} }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#consultar" aria-label="LIMPA!, início">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="10" fill="#E8A33D"/><path d="M10 13h14l-1.3 13.2a2 2 0 0 1-2 1.8h-7.4a2 2 0 0 1-2-1.8z" fill="#13573F"/><rect x="8.5" y="9.5" width="17" height="3" rx="1.5" fill="#13573F"/><path d="M14 9.5V8a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 20 8v1.5" stroke="#13573F" stroke-width="2" fill="none"/><path d="M15.2 21.5l1.8 1.8 3.6-4" stroke="#E8A33D" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span><b>LIMPA<span>!</span></b><small>Sua IA para educação ambiental</small></span>
+    </a>
+    <button class="score" id="scoreBtn" type="button" aria-label="Ver sua trilha de descartes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 21c-4.4 0-8-3.4-8-8 0-5 4-9 12-9 0 8-3 12-4 12"/><path d="M12 21c0-5 2-8 5-10"/></svg>
+      <span id="scoreNum">0</span>
+    </button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>Onde vai <em>isso</em> que está na sua mão?</h1>
+    <p>Digite, fotografe ou leia o código de barras da embalagem e veja a lixeira certa, como preparar e onde levar em Porto Alegre.</p>
+    <form class="search" id="searchForm" role="search" autocomplete="off">
+      <label for="q">Buscar resíduo</label>
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" inputmode="search" enterkeyhint="search" placeholder="Ex.: garrafa, pilha, sofá" aria-autocomplete="list" aria-controls="sugs" aria-expanded="false">
+      <label class="camin" for="cam" title="Tirar foto do resíduo" aria-label="Tirar foto do resíduo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.6"/></svg></label>
+      <button class="go" type="submit" aria-label="Buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <ul class="sugs" id="sugs" role="listbox" hidden></ul>
+    </form>
+    <div class="photo" id="photoBox">
+      <label class="cam" for="cam">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.6"/></svg>
+        <span><b>Tirar ou enviar foto do resíduo</b><small id="camSub">O LIMPA! reconhece e indica o descarte</small></span>
+      </label>
+      <button class="cam alt" type="button" id="scanBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 8v8M10 8v8M13 8v8M16 8v8"/></svg>
+        <span><b>Ler código de barras</b><small>Desrotule a embalagem</small></span>
+      </button>
+      <input id="cam" type="file" accept="image/*" capture="environment" hidden>
+    </div>
+    <div class="banner" id="inApp" hidden>Abriu dentro de outro app? Para usar a câmera, toque nos três pontinhos e escolha <b>Abrir no Chrome</b>.</div>
+    <div class="quick" id="quick" aria-label="Buscas comuns"></div>
+  </div>
+</section>
+
+<main class="wrap">
+  <!-- CONSULTAR -->
+  <section class="view" id="v-consultar" aria-label="Consultar resíduo">
+    <article class="result" id="result" aria-live="polite">
+      <div class="r-head"><div class="r-emoji" aria-hidden="true"><span class="spin"></span></div><div><h2>Carregando a base de resíduos…</h2></div></div>
+    </article>
+
+    <div>
+      <div class="sec-h"><h2>Navegue por tipo</h2><span class="eyebrow" id="catCount"></span></div>
+      <div class="cats" id="cats"></div>
+      <div class="items" id="catItems"></div>
+    </div>
+
+    <section class="how" aria-labelledby="howT">
+      <h2 id="howT">Como o assistente LIMPA! responde</h2>
+      <p>Digite o nome, tire uma foto do resíduo ou leia o código de barras da embalagem. No piloto, a mesma base atende também pelo WhatsApp e pelo QR Code, com áudio.</p>
+      <ol class="steps">
+        <li><span><b>Você manda o resíduo</b>Foto do filtro de café, código de barras do iogurte ou só o nome do item.</span></li>
+        <li><span><b>A IA consulta a fonte oficial</b>A IA só escolhe um item da base do DMLU. Horários e pontos vêm da base, nunca da memória do modelo.</span></li>
+        <li><span><b>Resposta com fonte, ou 156</b>Se não houver evidência, o assistente admite a dúvida e indica a Central 156.</span></li>
+      </ol>
+      <div class="rules"><span>Educar, não multar</span><span>Citação obrigatória</span><span>Fallback para o 156</span><span>Foto não é salva</span><span>Sem dados de alunos</span></div>
+    </section>
+
+    <section class="share" aria-labelledby="shT">
+      <div class="sec-h" style="margin:0"><h2 id="shT">Compartilhe para testar</h2><span class="eyebrow">Piloto</span></div>
+      <p style="margin:0;font-size:.93rem;color:var(--muted)">Mostre o QR Code ou envie o link para quem vai testar. Abra no Chrome do Android para usar a câmera.</p>
+      <div class="qr" id="qr" hidden></div>
+      <code id="shareUrl"></code>
+      <div class="r-actions">
+        <button class="btn primary" type="button" id="shareBtn">Compartilhar link</button>
+        <button class="btn ghost" type="button" id="qrBtn">Mostrar QR Code</button>
+      </div>
+    </section>
+  </section>
+
+  <!-- ECOPONTOS -->
+  <section class="view" id="v-ecopontos" aria-label="Ecopontos" hidden>
+    <div>
+      <div class="sec-h"><h2>Ecopontos de Porto Alegre</h2><span class="eyebrow" id="nowLbl"></span></div>
+      <p style="margin:0 0 12px;color:var(--muted);font-size:.93rem">Unidades de Destino Certo do DMLU. Recebem de graça móveis, colchões, entulho, poda, pneus, sucata, eletrodomésticos e recicláveis. Não recebem orgânico, lâmpada fluorescente nem remédio vencido.</p>
+      <div class="filters" id="ecoFilters" role="group" aria-label="Filtrar Ecopontos">
+        <button type="button" data-f="all" aria-pressed="true">Todos</button>
+        <button type="button" data-f="open" aria-pressed="false">Abertos agora</button>
+        <button type="button" data-f="ele" aria-pressed="false">Eletrônicos</button>
+        <button type="button" data-f="gesso" aria-pressed="false">Gesso</button>
+      </div>
+      <div class="eco-list" id="ecoAll"></div>
+    </div>
+    <div class="note">
+      <b>Limites por pessoa, por dia</b>
+      <div class="flow2" id="limites"></div>
+      <p style="margin:10px 0 0;font-size:.86rem">Não consegue levar? Peça a coleta especial pela Central 156: telefone <span class="mono">156</span> ou WhatsApp <span class="mono">(51) 3433-0156</span>.</p>
+    </div>
+    <p class="src">Fontes: <a href="https://prefeitura.poa.br/dmlu/projetos/destino-certo-ecopontos" target="_blank" rel="noopener">DMLU, Destino Certo (Ecopontos)</a> · <a href="https://prefeitura.poa.br/carta-de-servicos/unidade-de-destino-certo-ecoponto" target="_blank" rel="noopener">Carta de Serviços, Ecoponto</a>. Consultado em <span class="dataEco"></span>. Horários podem mudar em feriados; confirme pelo 156.</p>
+  </section>
+
+  <!-- CORES -->
+  <section class="view" id="v-cores" aria-label="Guia de cores" hidden>
+    <div>
+      <div class="sec-h"><h2>Cores das lixeiras</h2><span class="eyebrow">CONAMA 275/2001</span></div>
+      <div class="colors" id="colors"></div>
+    </div>
+    <div class="note">
+      <b>E na rua, em Porto Alegre?</b>
+      <p style="margin:.3rem 0 0">A coleta porta a porta separa em dois fluxos. As cores ajudam a separar dentro de escolas, comércios e condomínios.</p>
+      <div class="flow2">
+        <div><b>Coleta Seletiva</b>Papel, plástico, vidro e metal secos, juntos no mesmo saco. Contêiner verde onde houver.</div>
+        <div><b>Orgânico e rejeito</b>Restos de comida, papel sujo, fralda e bituca. Coleta domiciliar ou contêiner metálico.</div>
+      </div>
+    </div>
+    <div class="know"><b>Por que isso evita alagamento</b>Saco fora de hora, bituca e garrafa na calçada vão parar no bueiro com a chuva. Bueiro entupido não escoa a água. Descarte certo também é prevenção de alagamento.</div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="view" id="v-quiz" aria-label="Quiz" hidden>
+    <div class="level" id="level"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <footer>
+    <div><b>LIMPA! Sua IA para educação ambiental</b> · protótipo educativo do Projeto Limpa POA (Grupo 5, MBA UniSenac RS). Orienta o uso dos serviços que a cidade já oferece. Não fiscaliza, não multa e não recebe denúncias.</div>
+    <div>Informações reunidas de páginas oficiais da Prefeitura de Porto Alegre e do DMLU, consultadas em <span class="dataRes"></span>. Dados de embalagem por código de barras: Open Food Facts (base colaborativa). Em caso de dúvida, vale o que diz a Central 156.</div>
+    <div>Privacidade: fotos não são salvas; a pontuação fica só neste aparelho.</div>
+  </footer>
+</main>
+
+<nav class="nav" aria-label="Seções">
+  <div class="in">
+    <a href="#consultar" data-v="consultar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Consultar</a>
+    <a href="#ecopontos" data-v="ecopontos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Ecopontos</a>
+    <a href="#cores" data-v="cores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h14l-1.2 12.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M3.5 7h17M9.5 7V4.5h5V7"/></svg>Lixeiras</a>
+    <a href="#quiz" data-v="quiz"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></svg>Quiz</a>
+  </div>
+</nav>
+
+<!-- Leitor de código de barras -->
+<div class="scan" id="scan" role="dialog" aria-modal="true" aria-label="Ler código de barras" hidden>
+  <header><b>Aponte para o código de barras</b><button type="button" id="scanClose">Fechar</button></header>
+  <div class="stage">
+    <video id="scanVideo" playsinline muted></video>
+    <div class="reticle" aria-hidden="true"></div>
+    <div class="msg" id="scanMsg">Iniciando a câmera…</div>
+  </div>
+  <form id="scanForm"><input id="scanCode" inputmode="numeric" pattern="[0-9]*" placeholder="Ou digite os números do código" aria-label="Número do código de barras"><button type="submit">Buscar</button></form>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm=s=>String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
+const fmtData=iso=>{const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(iso||"");return m?`${m[3]}/${m[2]}/${m[1]}`:"data não informada"};
+const scrollToResult=()=>setTimeout(()=>$("#result").scrollIntoView({behavior:"smooth",block:"start"}),60);
+const goConsultar=()=>{if(location.hash!=="#consultar"&&location.hash!=="") location.hash="consultar"};
+
+/* ---------- Fontes oficiais (citação obrigatória) ---------- */
+const SRC={
+  sel:["Carta de Serviços — Coleta seletiva","https://prefeitura.poa.br/carta-de-servicos/coleta-seletiva-de-residuos"],
+  cont:["DMLU — Coleta conteinerizada","https://prefeitura.poa.br/dmlu/coleta-conteinerizada"],
+  eco:["DMLU — Destino Certo (Ecopontos)","https://prefeitura.poa.br/dmlu/projetos/destino-certo-ecopontos"],
+  udc:["Carta de Serviços — Ecoponto","https://prefeitura.poa.br/carta-de-servicos/unidade-de-destino-certo-ecoponto"],
+  pil:["DMLU — Pilhas e baterias","https://prefeitura.poa.br/dmlu/pilhas-e-baterias"],
+  lam:["DMLU — Lâmpadas fluorescentes","https://prefeitura.poa.br/dmlu/lampadas-fluorescentes"],
+  ele:["DMLU — Resíduos eletrônicos","https://prefeitura.poa.br/dmlu/residuos-eletronicos"],
+  med:["SMS Porto Alegre — Nota técnica: descarte de medicamentos (Decreto 10.388/2020)","https://www.prefeitura.poa.br/sites/default/files/usu_doc/hotsites/sms/bvaps-biblioteca-virtual-de-atencao-primaria-saude/Nota%20T%C3%A9cnica%20-%20Orienta%C3%A7%C3%B5es%20aos%20Pacientes%20-%20Descarte%20de%20Medicamentos%20Vencidos%20ou%20em%20Desuso%20-%20Decreto%2010.388.pdf"],
+  s156:["Central 156 — WhatsApp","https://prefeitura.poa.br/smtc/156-whatsapp"]
+};
+
+/* ---------- Padrão de cores ---------- */
+const BINS={
+  papel:{c:"var(--c-papel)",hex:"#1F6FD1",n:"Azul",m:"Papel e papelão"},
+  plastico:{c:"var(--c-plastico)",hex:"#D63B30",n:"Vermelha",m:"Plástico"},
+  vidro:{c:"var(--c-vidro)",hex:"#2E9B4E",n:"Verde",m:"Vidro"},
+  metal:{c:"var(--c-metal)",hex:"#F2C230",n:"Amarela",m:"Metal"},
+  organico:{c:"var(--c-organico)",hex:"#7A4E2D",n:"Marrom",m:"Orgânico"},
+  rejeito:{c:"var(--c-rejeito)",hex:"#8A8F94",n:"Cinza",m:"Rejeito (não reciclável)"},
+  perigoso:{c:"var(--c-perigoso)",hex:"#F07F1A",n:"Laranja",m:"Resíduos perigosos"},
+  saude:{c:"var(--c-saude)",hex:"#F4F4F1",n:"Branca",m:"Resíduos de saúde"},
+  madeira:{c:"var(--c-madeira)",hex:"#1E1E1E",n:"Preta",m:"Madeira"},
+  radio:{c:"var(--c-radio)",hex:"#7B4BB7",n:"Roxa",m:"Radioativos"}
+};
+function binSVG(key){
+  const b=BINS[key]; const light=key==="saude"||key==="metal";
+  const sym=light?"#3A3A3A":"#FFFFFF";
+  return `<svg viewBox="0 0 92 96" aria-hidden="true"><ellipse cx="46" cy="92" rx="30" ry="3.5" fill="currentColor" opacity=".12"/>
+  <path d="M16 26h60l-5.2 58.6A6 6 0 0 1 64.8 90H27.2a6 6 0 0 1-6-5.4z" fill="${b.c}" stroke="rgba(0,0,0,.18)" stroke-width="1.2"/>
+  <rect x="11" y="15" width="70" height="11" rx="5" fill="${b.c}" stroke="rgba(0,0,0,.22)" stroke-width="1.2"/>
+  <rect x="36" y="9" width="20" height="8" rx="3" fill="${b.c}" stroke="rgba(0,0,0,.22)" stroke-width="1.2"/>
+  <g fill="none" stroke="${sym}" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" opacity=".92">
+   <path d="M38 50l6-10 6 10"/><path d="M53 58l5 9H46"/><path d="M39 67h-6l5-9"/>
+  </g></svg>`;
+}
+function stationSVG(color){
+  return `<svg viewBox="0 0 92 96" aria-hidden="true"><ellipse cx="46" cy="92" rx="32" ry="3.5" fill="currentColor" opacity=".12"/>
+  <path d="M14 40 46 16l32 24v46a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4z" fill="${color}"/>
+  <rect x="34" y="58" width="24" height="32" rx="2" fill="rgba(255,255,255,.9)"/>
+  <path d="M40 46h12" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>`;
+}
+
+/* ---------- Fluxos de Porto Alegre ---------- */
+const FLOW={
+  sel:{pill:"Coleta Seletiva",where:[
+    "Coloque em saco ou sacola de até 100 L na calçada, em frente ao imóvel, no dia e turno da seletiva do seu endereço.",
+    "Consulte dia e turno em coletaslixo.procempa.com.br/coletaseletiva ou pelo 156.",
+    "No Centro Histórico, Cidade Baixa, Menino Deus e Praia de Belas há contêineres verdes só para recicláveis, 24 h.",
+    "Os Ecopontos também recebem recicláveis, sem limite de volume."],src:["sel","cont"]},
+  org:{pill:"Orgânico",where:[
+    "Vai na coleta domiciliar (lixo comum), em saco fechado, no dia e horário da sua rua.",
+    "Nos bairros centrais com coleta automatizada (Centro Histórico, Cidade Baixa, Bom Fim, Moinhos de Vento e outros), use o contêiner metálico, disponível 24 h.",
+    "Se puder, faça compostagem: cascas, borra de café e erva-mate viram adubo."],src:["cont","sel"]},
+  rej:{pill:"Rejeito",where:[
+    "Vai na coleta domiciliar (lixo comum), em saco bem fechado, no dia e horário da sua rua.",
+    "Nos bairros com coleta automatizada, use o contêiner metálico. Nunca deixe sacos ao redor dele.",
+    "Não misture com a seletiva: um item sujo pode estragar o saco inteiro de recicláveis."],src:["cont","sel"]},
+  esp:{pill:"Descarte especial",where:[],src:[]},
+  eco:{pill:"Ecoponto ou 156",where:[
+    "Leve a um Ecoponto (Unidade de Destino Certo). O serviço é gratuito.",
+    "Se não conseguir levar, solicite a coleta especial pela Central 156.",
+    "Não deixe na calçada: volumoso fora de hora bloqueia a passagem e pode obstruir bueiros."],src:["eco","udc","s156"]}
+};
+const TYPE_LBL={sel:"Seletiva",org:"Orgânico",rej:"Rejeito",esp:"Especial",eco:"Ecoponto"};
+
+/* ---------- Estado carregado dos JSON ---------- */
+let ITEMS=[],byId={},ECO=[],LIM={},DATA_RES="",DATA_ECO="";
+
+/* ---------- Ecopontos ---------- */
+function poaNow(){
+  try{
+    const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/Sao_Paulo",weekday:"short",hour:"numeric",minute:"numeric",hour12:false}).formatToParts(new Date());
+    const g=t=>(p.find(x=>x.type===t)||{}).value;
+    return {d:g("weekday"),h:(+g("hour"))%24+(+g("minute"))/60};
+  }catch(e){const d=new Date();return {d:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()],h:d.getHours()+d.getMinutes()/60}}
+}
+function ecoStatus(e){
+  if(e.closed) return ["reform","Fechado para reforma"];
+  const n=poaNow(); let r=null;
+  if(["Mon","Tue","Wed","Thu","Fri"].includes(n.d)) r=e.wk; else if(n.d==="Sat") r=e.sa;
+  if(r && n.h>=r[0] && n.h<r[1]) return ["open","Aberto agora"];
+  return ["closed","Fechado agora"];
+}
+const mapIco=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>`;
+function ecoCard(e){
+  const [cls,lbl]=ecoStatus(e);
+  const q=encodeURIComponent(e.a.replace(/\s*\(.*\)/,"")+", "+e.b+", Porto Alegre - RS");
+  const tags=[e.ele?"Eletrônicos (PERE)":"",e.gesso?"Gesso":"","Óleo, volumosos e recicláveis"].filter(Boolean);
+  return `<div class="eco"><div class="row"><h3>${esc(e.n)}</h3><span class="st ${cls}">${lbl}</span></div>
+  <div class="addr">${esc(e.a)} · ${esc(e.b)}${e.hint?` · <b>${esc(e.hint)}</b>`:""}</div>
+  <div class="hrs">${e.closed?"Temporariamente fechado para reformas":`Seg a sex ${e.wk[0]}h às ${e.wk[1]}h · Sáb e feriados ${e.sa[0]}h às ${e.sa[1]}h`}</div>
+  <div class="tags">${tags.map(t=>`<span>${t}</span>`).join("")}</div>
+  ${e.closed?"":`<a class="map" href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">${mapIco}Abrir no mapa</a>`}</div>`;
+}
+function ecoFor(f){
+  let l=ECO.filter(e=>!e.closed);
+  if(f==="ele") l=l.filter(e=>e.ele); else if(f==="gesso") l=l.filter(e=>e.gesso);
+  const rank=e=>ecoStatus(e)[0]==="open"?0:1;
+  return l.slice().sort((a,b)=>rank(a)-rank(b));
+}
+
+/* ---------- Pontuação / Trilha (só neste aparelho) ---------- */
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let pts=store.get("limpapoai_pts",0);
+const LEVELS=[[0,"Semente"],[3,"Broto"],[6,"Árvore"],[10,"Agente Limpa POA"]];
+const CHEERS={
+ 1:"Primeiro descarte certo! Bem-vindo à Trilha Limpa POA.",
+ 2:"Mais um! Embalagem limpa na seletiva vira matéria-prima, não aterro.",
+ 3:"Três acertos: menos um bueiro entupido no seu bairro. Você virou Broto!",
+ 5:"Cinco! Menos lixo descendo para o Guaíba.",
+ 6:"Seis descartes certos. Você já é Árvore na trilha!",
+ 10:"Dez! Você é oficialmente Agente Limpa POA. Que tal ensinar alguém?"
+};
+const CHEER_MORE=["Os catadores agradecem: material separado é renda para as cooperativas.","Boa! Separar certo ajuda a cidade a gastar menos com aterro.","Mandou bem. Rua limpa, bueiro livre, menos alagamento.","Cada acerto conta. O Guaíba agradece!","Isso! Você está usando bem o serviço que a cidade já tem."];
+function levelOf(p){let l=LEVELS[0],nx=null;for(let i=0;i<LEVELS.length;i++){if(p>=LEVELS[i][0]){l=LEVELS[i];nx=LEVELS[i+1]||null}}return {l,nx}}
+function renderScore(){ $("#scoreNum").textContent=pts; renderLevel(); }
+function renderLevel(){
+  const {l,nx}=levelOf(pts); const base=l[0]; const pct=nx?Math.round((pts-base)/(nx[0]-base)*100):100;
+  $("#level").innerHTML=`<div class="lv-row"><span class="eyebrow">Sua trilha</span><span style="font-variant-numeric:tabular-nums;font-weight:700">${pts} descarte${pts===1?"":"s"} certo${pts===1?"":"s"}</span></div>
+  <div class="lv-row"><b>${l[1]}</b>${nx?`<small>faltam ${nx[0]-pts} para ${nx[1]}</small>`:"<small>nível máximo</small>"}</div>
+  <div class="lv-bar"><i style="width:${pct}%"></i></div>
+  <small>Marque "Descartei certo" nos cards e acerte o quiz para avançar. A contagem fica só neste aparelho.</small>`;
+}
+let toastT;
+function toast(html){const t=$("#toast");t.innerHTML=html;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),3800)}
+function addPoint(src){
+  pts++; store.set("limpapoai_pts",pts); renderScore();
+  const msg=CHEERS[pts]||CHEER_MORE[pts%CHEER_MORE.length];
+  toast(`<b>+1 ${esc(src||"descarte certo")}</b><br>${esc(msg)}`);
+}
+$("#scoreBtn").addEventListener("click",()=>{location.hash="quiz"});
+
+/* ---------- Card de resultado ---------- */
+const icoList=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>`;
+const icoPin=mapIco;
+const icoCheck=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>`;
+const icoMsg=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-5.1A8 8 0 1 1 21 12z"/></svg>`;
+const icoBox=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg>`;
+const doneIds=new Set();
+
+function destinoCurto(it){
+  if(it.bin) return `${BINS[it.bin].n} · ${FLOW[it.t].pill}`;
+  return it.t==="eco"?"Ecoponto ou 156":(it.id==="oleo"?"Ponto de óleo (Ecoponto)":"Ponto de entrega especial");
+}
+function showItem(it,scroll,banner){
+  const f=FLOW[it.t];
+  const pillTxt=it.id==="oleo"?"Ponto de entrega · Óleo":(it.ecoF==="ele"?"Ponto de entrega · Eletrônico":f.pill);
+  let vis,k,v,p;
+  if(it.bin){const b=BINS[it.bin];vis=binSVG(it.bin);k="Lixeira pelo padrão de cores";v=`${b.n} · ${b.m}`;
+    p= it.t==="sel"?"Na rua, em Porto Alegre, todos os recicláveis secos vão juntos no saco da Coleta Seletiva."
+     : (it.t==="org"||it.t==="rej")?"Na rua, em Porto Alegre, vai na coleta domiciliar (orgânico e rejeito)."
+     : it.t==="eco"?"Volume grande não vai em lixeira: leve ao Ecoponto."
+     : "Não vai na lixeira comum nem na seletiva: precisa de ponto de entrega.";}
+  else {vis=stationSVG(it.station||"#1D3B5C");k="Destino";v=it.t==="eco"?"Ecoponto ou coleta especial 156":"Ponto de entrega especial";
+    p=it.t==="eco"?"Volume grande não vai em lixeira nem na calçada.":"Não vai na lixeira comum nem na seletiva.";}
+  const where=(it.where||f.where).slice(); if(it.limit) where.unshift(it.limit);
+  const srcKeys=(it.src||f.src).filter(s=>SRC[s]);
+  const srcHtml=srcKeys.map(s=>`<a href="${SRC[s][1]}" target="_blank" rel="noopener">${esc(SRC[s][0])}</a>`).join(" · ");
+  const ecoList=it.ecoF?`<div class="blk"><h3>${icoPin}Ecopontos ${it.ecoF==="ele"?"com eletrônicos":it.ecoF==="gesso"?"que recebem gesso":"de Porto Alegre"}</h3>
+     <div class="eco-list">${ecoFor(it.ecoF).slice(0,3).map(ecoCard).join("")}</div>
+     <p style="margin:8px 0 0"><a href="#ecopontos" style="font-weight:700">Ver todos os Ecopontos</a></p></div>`:"";
+  const draft=it.d156?`<div class="blk"><h3>${icoMsg}Rascunho para a Central 156</h3>
+     <div class="draft"><textarea id="draft156" aria-label="Texto para enviar ao 156">Olá! Gostaria de solicitar a coleta especial de resíduo volumoso.
+Item: ${esc(it.n)}
+Quantidade aproximada:
+Endereço:
+Ponto de referência:
+Melhor horário para contato: </textarea>
+     <div class="r-actions"><button class="btn ghost" type="button" id="copy156">Copiar texto</button>
+     <a class="btn amber" id="wa156" href="#" target="_blank" rel="noopener">Abrir WhatsApp do 156</a></div>
+     <small>Complete e revise. Quem envia é você: o LIMPA! só prepara o texto. WhatsApp 156: <span class="mono">(51) 3433-0156</span> · Telefone: <span class="mono">156</span></small></div></div>`:"";
+  const done=doneIds.has(it.id);
+  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">${esc(it.e)}</div>
+     <div style="min-width:0"><h2>${esc(it.n)}</h2><span class="pill ${it.t}">${esc(pillTxt)}</span></div></div>
+   <div class="r-body">
+     ${banner||""}
+     <div class="binrow" style="color:var(--fg)">${vis}<div style="min-width:0"><div class="k">${k}</div><div class="v">${esc(v)}</div><p>${esc(p)}</p></div></div>
+     <div class="blk"><h3>${icoList}Como preparar</h3><ul>${(it.prep||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+     <div class="blk"><h3>${icoPin}Onde e quando, em Porto Alegre</h3><ul>${where.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+     ${ecoList}${draft}
+     ${it.tip?`<div class="know"><b>${esc(it.tip[0])}</b>${esc(it.tip[1])}</div>`:""}
+     <div class="r-actions"><button class="btn primary" type="button" id="doneBtn" ${done?"disabled":""}>${icoCheck}${done?"Descarte registrado":"Descartei certo"}</button>
+       <button class="btn ghost" type="button" id="newBtn">Buscar outro</button></div>
+     <div class="src">Fonte: ${srcHtml}. Padrão de cores: Resolução CONAMA 275/2001. Consultado em ${DATA_RES}.</div>
+   </div>`;
+  $("#doneBtn").addEventListener("click",e=>{doneIds.add(it.id);e.currentTarget.disabled=true;e.currentTarget.innerHTML=icoCheck+"Descarte registrado";addPoint("descarte certo")});
+  $("#newBtn").addEventListener("click",()=>{$("#q").value="";window.scrollTo({top:0,behavior:"smooth"});setTimeout(()=>$("#q").focus(),300)});
+  if(it.d156){
+    const ta=$("#draft156"),wa=$("#wa156");
+    const upd=()=>{wa.href="https://wa.me/555134330156?text="+encodeURIComponent(ta.value)};upd();ta.addEventListener("input",upd);
+    $("#copy156").addEventListener("click",ev=>{const btn=ev.currentTarget;
+      const ok=()=>{btn.textContent="Copiado"};
+      try{navigator.clipboard.writeText(ta.value).then(ok,()=>{ta.select();btn.textContent="Texto selecionado"})}catch(e){ta.select();btn.textContent="Texto selecionado"}});
+  }
+  bindPhotoLinks();
+  if(scroll){ goConsultar(); scrollToResult(); }
+}
+function fallbackHtml(){
+  return `<div class="draft"><div>Telefone: <span class="mono">156</span> · de outras cidades <span class="mono">(51) 3289-0156</span></div>
+    <div>WhatsApp do 156: <span class="mono">(51) 3433-0156</span></div>
+    <div>Portal: <a href="https://156web.procempa.com.br" target="_blank" rel="noopener">156web.procempa.com.br</a></div></div>
+    <div class="know"><b>Regra de bolso</b>Seco e limpo costuma ir na seletiva. Sujo de comida vai no orgânico. Pilha, lâmpada, remédio, óleo e eletrônico precisam de ponto de entrega.</div>`;
+}
+function showFallback(q){
+  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">🤔</div>
+   <div style="min-width:0"><h2>Não encontrei "${esc(q)}" com segurança</h2><span class="pill eco">Fallback · Central 156</span></div></div>
+   <div class="r-body">
+    <p style="margin:0">Prefiro não chutar uma regra sem fonte oficial. Tente outra palavra (por exemplo, o material: plástico, vidro, metal) ou consulte a Prefeitura:</p>
+    ${fallbackHtml()}
+    <div class="src">Fonte: <a href="${SRC.s156[1]}" target="_blank" rel="noopener">${SRC.s156[0]}</a>. Consultado em ${DATA_RES}.</div>
+   </div>`;
+  goConsultar(); scrollToResult();
+}
+
+/* ---------- Busca ---------- */
+const STOP=new Set(["de","da","do","das","dos","e","com","sem","para","pra","na","no","nas","nos","em","um","uma","o","a","os","as","meu","minha"]);
+function search(q){
+  const nq=norm(q); if(!nq) return [];
+  const toks=nq.split(" ").filter(t=>(t.length>1||nq.length===1)&&!STOP.has(t));
+  const res=[];
+  for(const it of ITEMS){
+    let sc=0; const nn=norm(it.n);
+    if(nn===nq) sc+=100; if(nn.startsWith(nq)) sc+=40; if(it._k.includes(nq)) sc+=30;
+    for(const t of toks){ const st=t.length>4?t.replace(/s$/,""):t; if(it._k.includes(st)) sc+=8; if(nn.includes(st)) sc+=6; }
+    if(sc>0) res.push([sc,it]);
+  }
+  return res.sort((a,b)=>b[0]-a[0]).map(x=>x[1]);
+}
+const sugs=$("#sugs"),qi=$("#q"); let sel=-1,cur=[];
+function renderSugs(){
+  cur=search(qi.value).slice(0,6); sel=-1;
+  if(!cur.length||!qi.value.trim()){sugs.hidden=true;qi.setAttribute("aria-expanded","false");return}
+  sugs.innerHTML=cur.map((it,i)=>`<li role="presentation"><button type="button" role="option" id="sg${i}" data-id="${esc(it.id)}" aria-selected="false"><span class="em" aria-hidden="true">${esc(it.e)}</span><span>${esc(it.n)}</span><span class="tag">${TYPE_LBL[it.t]||""}</span></button></li>`).join("");
+  sugs.hidden=false; qi.setAttribute("aria-expanded","true");
+}
+qi.addEventListener("input",renderSugs);
+qi.addEventListener("keydown",e=>{
+  if(sugs.hidden) return;
+  const bs=[...sugs.querySelectorAll("button")];
+  if(e.key==="ArrowDown"){e.preventDefault();sel=Math.min(sel+1,bs.length-1)}
+  else if(e.key==="ArrowUp"){e.preventDefault();sel=Math.max(sel-1,0)}
+  else if(e.key==="Escape"){sugs.hidden=true;return}
+  else return;
+  bs.forEach((b,i)=>b.setAttribute("aria-selected",i===sel?"true":"false"));
+});
+sugs.addEventListener("click",e=>{const b=e.target.closest("button[data-id]");if(!b)return;pick(byId[b.dataset.id])});
+function pick(it){if(!it)return;sugs.hidden=true;qi.value=it.n;qi.blur();showItem(it,true)}
+$("#searchForm").addEventListener("submit",e=>{
+  e.preventDefault(); const q=qi.value.trim(); if(!q||!ITEMS.length) return;
+  if(/^\d{8,14}$/.test(q)){sugs.hidden=true;qi.blur();return lookupBarcode(q,null)}
+  if(sel>=0&&cur[sel]) return pick(cur[sel]);
+  const r=search(q); sugs.hidden=true; qi.blur();
+  if(r.length) showItem(r[0],true); else showFallback(q);
+});
+document.addEventListener("click",e=>{if(!e.target.closest(".search")) sugs.hidden=true});
+function chipsHtml(list,idAttr){
+  return `<div class="items" ${idAttr?`id="${idAttr}"`:""}>${list.map(i=>`<button type="button" data-id="${esc(i.id)}"><span aria-hidden="true">${esc(i.e)}</span>${esc(i.n)}</button>`).join("")}</div>`;
+}
+document.addEventListener("click",e=>{const b=e.target.closest("#result .items button[data-id], #result .part[data-id]");if(b)pick(byId[b.dataset.id])});
+
+/* ---------- Categorias ---------- */
+const CATS=[
+ {t:"sel",n:"Recicláveis",d:"Papel, plástico, vidro e metal",c:"#1E7F5C"},
+ {t:"org",n:"Orgânicos",d:"Restos de comida, borra, erva",c:"#7A4E2D"},
+ {t:"rej",n:"Rejeitos",d:"Banheiro, bituca, não recicláveis",c:"#8A8F94"},
+ {t:"esp",n:"Especiais",d:"Pilha, lâmpada, remédio, óleo, eletrônico",c:"#F07F1A"},
+ {t:"eco",n:"Volumosos",d:"Sofá, colchão, entulho, poda",c:"#1D3B5C"}
+];
+let curCat=null;
+$("#cats").innerHTML=CATS.map(c=>`<button class="cat" type="button" data-t="${c.t}" aria-pressed="false" style="--cc:${c.c}"><b>${c.n}</b><span>${c.d}</span></button>`).join("");
+$("#cats").addEventListener("click",e=>{const b=e.target.closest(".cat");if(!b)return;
+  curCat=curCat===b.dataset.t?null:b.dataset.t;
+  document.querySelectorAll(".cat").forEach(x=>x.setAttribute("aria-pressed",x.dataset.t===curCat?"true":"false"));
+  const l=curCat?ITEMS.filter(i=>i.t===curCat):[];
+  $("#catItems").innerHTML=l.map(i=>`<button type="button" data-id="${esc(i.id)}"><span aria-hidden="true">${esc(i.e)}</span>${esc(i.n)}</button>`).join("");
+  $("#catCount").textContent=curCat?`${l.length} itens`:`${ITEMS.length} resíduos na base`;
+});
+$("#catItems").addEventListener("click",e=>{const b=e.target.closest("button[data-id]");if(b)pick(byId[b.dataset.id])});
+
+/* ---------- Ecopontos (aba) ---------- */
+let ecoF="all";
+function renderEco(){
+  let l=ECO.slice();
+  if(ecoF==="open") l=l.filter(e=>ecoStatus(e)[0]==="open");
+  else if(ecoF==="ele") l=l.filter(e=>e.ele&&!e.closed);
+  else if(ecoF==="gesso") l=l.filter(e=>e.gesso&&!e.closed);
+  const rank=e=>({open:0,closed:1,reform:2})[ecoStatus(e)[0]];
+  l.sort((a,b)=>rank(a)-rank(b));
+  $("#ecoAll").innerHTML=l.length?l.map(ecoCard).join(""):`<div class="note">Nenhum Ecoponto aberto neste momento. Domingo não há atendimento; nos dias úteis a maioria abre às 7h ou 8h.</div>`;
+  const n=poaNow(); const hh=Math.floor(n.h), mm=String(Math.round((n.h-hh)*60)).padStart(2,"0");
+  $("#nowLbl").textContent=`Agora em POA: ${hh}h${mm}`;
+}
+$("#ecoFilters").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;ecoF=b.dataset.f;
+  document.querySelectorAll("#ecoFilters button").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));renderEco()});
+function renderLimites(){
+  const n=v=>String(v).replace(".",",");
+  $("#limites").innerHTML=`<div><b>${n(LIM.volumosos_m3_dia??1)} m³</b>móveis e volumosos (sofá, armário, mesa)</div>
+    <div><b>${n(LIM.entulho_m3_dia??0.5)} m³</b>entulho de obra</div>
+    <div><b>${n(LIM.poda_m3_dia??1)} m³</b>galhos e restos de poda</div>
+    <div><b>${n(LIM.pneus_por_dia??4)} pneus</b>por pessoa</div>`;
+}
+
+/* ---------- Cores ---------- */
+const COLOR_EX={papel:"Jornal, caixas, folhas",plastico:"PET, potes, sacolas, isopor",vidro:"Garrafas e potes",metal:"Latas, tampinhas, alumínio",
+  organico:"Comida, borra, erva-mate",rejeito:"Banheiro, bituca, fralda",perigoso:"Pilhas, lâmpadas, tintas",saude:"Remédios, seringas",madeira:"Madeira e móveis",radio:"Resíduos radioativos"};
+$("#colors").innerHTML=Object.keys(BINS).map(k=>`<div class="color" style="color:var(--fg)">${binSVG(k)}<div style="min-width:0"><b>${BINS[k].n}</b><span>${BINS[k].m}</span><span>${COLOR_EX[k]}</span></div></div>`).join("");
+
+/* ---------- Quiz ---------- */
+const OPTS=[["a","Coleta Seletiva"],["b","Orgânico ou rejeito (coleta domiciliar)"],["c","Ponto de entrega ou Ecoponto"]];
+const QZ=[
+ {id:"filtro",a:"b",x:"Filtro de papel com borra é orgânico. Papel sujo de comida não vai na seletiva."},
+ {id:"isopor",a:"a",x:"Isopor é plástico (EPS). Limpo, vai na Coleta Seletiva."},
+ {id:"pizzasuja",a:"b",x:"A gordura impede a reciclagem. Só a parte limpa da caixa vai na seletiva."},
+ {id:"pilha",a:"c",x:"Pilhas voltam para a loja, assistência técnica ou posto de recebimento (Lei municipal 9.851/2005)."},
+ {id:"oleo",a:"c",x:"Frio, em garrafa PET fechada, no posto de óleo (PEOF) dos Ecopontos. Nunca na pia."},
+ {id:"erva",a:"b",x:"Erva-mate usada é orgânico e ótima para compostagem."},
+ {id:"sofa",a:"c",x:"Ecoponto (até 1 m³ por dia) ou coleta especial pelo 156. Nunca na calçada."},
+ {id:"vidroquebrado",a:"a",x:"Vidro vai na seletiva, embrulhado e identificado para proteger quem coleta."}
+];
+let qn=0,qok=0,answered=false;
+function renderQuiz(){
+  const box=$("#quiz");
+  const qz=QZ.filter(q=>byId[q.id]);
+  if(qn>=qz.length){
+    box.innerHTML=`<div class="q-top"><span>Resultado</span><span>${qz.length}/${qz.length}</span></div><div class="q-bar"><i style="width:100%"></i></div>
+    <h2 style="font-size:1.5rem">${qok} de ${qz.length} acertos</h2>
+    <p style="margin:0">${qok===qz.length?"Gabaritou! Você é referência de descarte na sua escola ou no seu comércio.":qok>=5?"Muito bem! Revise os itens que errou na aba Consultar.":"Boa tentativa. Os itens que confundem mais são justamente os que parecem recicláveis e não são."}</p>
+    <div class="r-actions"><button class="btn primary" type="button" id="qAgain">Jogar de novo</button><a class="btn ghost" href="#consultar">Consultar resíduos</a></div>`;
+    $("#qAgain").addEventListener("click",()=>{qn=0;qok=0;renderQuiz()});return;
+  }
+  const q=qz[qn],it=byId[q.id]; answered=false;
+  box.innerHTML=`<div class="q-top"><span>Onde vai?</span><span style="font-variant-numeric:tabular-nums">${qn+1}/${qz.length} · ${qok} acerto${qok===1?"":"s"}</span></div>
+   <div class="q-bar"><i style="width:${qn/qz.length*100}%"></i></div>
+   <div class="q-item"><div class="r-emoji" aria-hidden="true">${esc(it.e)}</div><h2>${esc(it.n)}</h2></div>
+   <div class="q-opts">${OPTS.map(o=>`<button type="button" data-o="${o[0]}">${o[1]}</button>`).join("")}</div>
+   <div id="qfb"></div>`;
+  box.querySelector(".q-opts").addEventListener("click",e=>{
+    const b=e.target.closest("button");if(!b||answered)return;answered=true;
+    const right=b.dataset.o===q.a; if(right){qok++;addPoint("acerto no quiz")}
+    box.querySelectorAll(".q-opts button").forEach(x=>{if(x.dataset.o===q.a)x.classList.add("right");else if(x===b)x.classList.add("wrong")});
+    $("#qfb").innerHTML=`<div class="q-fb"><b>${right?"Isso mesmo!":"Quase."}</b> ${esc(q.x)}</div>
+      <div class="r-actions" style="margin-top:10px"><button class="btn primary" type="button" id="qNext">${qn+1<qz.length?"Próxima":"Ver resultado"}</button>
+      <button class="btn ghost" type="button" id="qSee">Ver card do item</button></div>`;
+    $("#qNext").addEventListener("click",()=>{qn++;renderQuiz()});
+    $("#qSee").addEventListener("click",()=>showItem(it,true));
+  });
+}
+
+/* ---------- Navegação por abas (hash) ---------- */
+const VIEWS=["consultar","ecopontos","cores","quiz"];
+function route(){
+  const h=(location.hash||"").replace("#","");
+  const v=VIEWS.includes(h)?h:"consultar";
+  VIEWS.forEach(x=>{$("#v-"+x).hidden=x!==v});
+  document.querySelectorAll(".nav a").forEach(a=>{if(a.dataset.v===v)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+  if(v==="ecopontos") renderEco();
+  if(VIEWS.includes(h)) window.scrollTo({top:0});
+}
+window.addEventListener("hashchange",route);
+
+/* =====================================================================
+   FOTO — 1) procura código de barras na própria foto (gratuito, no aparelho)
+          2) se não houver, envia ao servidor /api/identificar (Claude)
+   A foto é reduzida no aparelho (máx. 1024 px, JPEG 0,8) e não é salva.
+   ===================================================================== */
+let iaAtiva=null, lastUrl=null, camCtl=null;
+async function checarIA(){
+  try{
+    const r=await fetch("api/identificar",{cache:"no-store"});
+    const j=r.ok?await r.json():null; iaAtiva=!!(j&&j.ativo);
+  }catch(e){iaAtiva=false}
+  $("#camSub").textContent=iaAtiva?"O LIMPA! reconhece e indica o descarte":"Lê o código de barras da foto";
+}
+function photoBanner(url,r,conf){
+  const cl=conf==="media"?"conf media":"conf";
+  const ct=conf==="media"?"Confiança média: confira se é isso":"Reconhecido com confiança";
+  return `<div class="ai">${url?`<img src="${url}" alt="Sua foto">`:`<div class="ph" aria-hidden="true">📷</div>`}<div style="min-width:0"><small>Identificado na sua foto</small><b>${esc(r.objeto||"")}</b>
+   <span class="${cl}">${ct}</span>${r.estado?`<small>Estado: ${esc(r.estado)}</small>`:""}
+   <small><a href="#" class="photo-again">Tirar outra foto</a> · <a href="#" class="photo-search">Não é isso? Buscar pelo nome</a></small></div></div>`;
+}
+function bindPhotoLinks(){
+  document.querySelectorAll(".photo-again").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();$("#cam").click()}));
+  document.querySelectorAll(".photo-search").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();window.scrollTo({top:0,behavior:"smooth"});setTimeout(()=>$("#q").focus(),300)}));
+}
+function photoMsg(url,title,body,chips,extra){
+  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">📷</div><div style="min-width:0"><h2>${esc(title)}</h2><span class="pill eco">Foto</span></div></div>
+   <div class="r-body">${url?`<div class="ai"><img src="${url}" alt="Sua foto"><div style="min-width:0">${body}</div></div>`:`<div>${body}</div>`}
+   ${chips&&chips.length?chipsHtml(chips):""}
+   ${extra||""}
+   <div class="r-actions"><button class="btn primary" type="button" id="againBtn">Tirar outra foto</button><button class="btn ghost" type="button" id="scanBtn2">Ler código de barras</button><button class="btn ghost" type="button" id="typeBtn">Digitar o nome</button></div>
+   <div class="src">A foto é usada só para esta análise e não fica salva. Evite fotografar pessoas.</div></div>`;
+  $("#againBtn").addEventListener("click",()=>$("#cam").click());
+  $("#scanBtn2").addEventListener("click",openScanner);
+  $("#typeBtn").addEventListener("click",()=>{window.scrollTo({top:0,behavior:"smooth"});setTimeout(()=>$("#q").focus(),300)});
+  goConsultar(); scrollToResult();
+}
+async function carregarImagem(file){
+  if("createImageBitmap" in window){
+    try{return await createImageBitmap(file,{imageOrientation:"from-image"})}catch(e){}
+  }
+  return await new Promise((ok,ko)=>{const im=new Image();im.onload=()=>ok(im);im.onerror=()=>ko(new Error("imagem"));im.src=URL.createObjectURL(file)});
+}
+function reduzir(img,max){
+  const w=img.width||img.naturalWidth,h=img.height||img.naturalHeight;
+  const s=Math.min(1,max/Math.max(w,h));
+  const c=document.createElement("canvas");c.width=Math.round(w*s);c.height=Math.round(h*s);
+  c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+  return c;
+}
+async function codigoNaImagem(src){
+  try{
+    if("BarcodeDetector" in window){
+      const d=new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e"]});
+      const r=await d.detect(src); if(r&&r[0]) return r[0].rawValue;
+    }
+  }catch(e){}
+  return null;
+}
+const ERR_FOTO={limite:"Muitas análises seguidas. Espere um minuto e tente de novo.",tipo:"Formato de imagem não aceito. Use JPG, PNG ou WebP.",
+  grande:"A foto ficou grande demais. Tente de novo.",tempo:"A análise demorou demais (15 s). Tente outra foto, mais de perto.",
+  nao_configurado:"O reconhecimento por foto ainda não foi ativado neste link.",rede:"Sem conexão com o servidor. Confira a internet."};
+
+$("#cam").addEventListener("change",async e=>{
+  const f=e.target.files&&e.target.files[0]; e.target.value=""; if(!f||!ITEMS.length) return;
+  if(lastUrl) URL.revokeObjectURL(lastUrl); lastUrl=URL.createObjectURL(f);
+  goConsultar();
+  if(camCtl) camCtl.abort(); camCtl=new AbortController(); const ctl=camCtl;
+  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">📷</div><div style="min-width:0"><h2>Analisando sua foto…</h2><span class="pill eco">LIMPA!</span></div></div>
+   <div class="r-body"><div class="ai"><img src="${lastUrl}" alt="Sua foto"><div><span class="spin" aria-hidden="true"></span> <span>Procurando código de barras e identificando o resíduo</span></div></div>
+   <div class="r-actions"><button class="btn ghost" type="button" id="stopBtn">Cancelar</button></div></div>`;
+  $("#stopBtn").addEventListener("click",()=>ctl.abort());
+  scrollToResult();
+
+  let img;
+  try{img=await carregarImagem(f)}catch(err){return photoMsg(lastUrl,"Não consegui abrir essa imagem","<small>Tente outra foto (JPG ou PNG).</small>",[])}
+  // 1) Código de barras na foto (gratuito, no aparelho)
+  const cod=await codigoNaImagem(img);
+  if(ctl.signal.aborted) return;
+  if(cod) return lookupBarcode(cod,lastUrl);
+
+  // 2) IA no servidor
+  if(iaAtiva===null) await checarIA();
+  if(!iaAtiva){
+    return photoMsg(lastUrl,"Não encontrei código de barras na foto",
+      `<small>O reconhecimento do objeto por IA ainda não está ativo neste link de teste.</small><small>Tente <b>Ler código de barras</b> com a câmera ao vivo, escolha abaixo ou digite o nome.</small>`,
+      ["pet","lata","vidro","longavida","pote","papelao"].map(i=>byId[i]).filter(Boolean));
+  }
+  try{
+    const canvas=reduzir(img,1024);
+    const blob=await new Promise(ok=>canvas.toBlob(ok,"image/jpeg",0.8));
+    const fd=new FormData(); fd.append("foto",blob,"foto.jpg");
+    const t=setTimeout(()=>ctl.abort(),17000);
+    let resp;
+    try{resp=await fetch("api/identificar",{method:"POST",body:fd,signal:ctl.signal})}
+    finally{clearTimeout(t)}
+    const res=await resp.json().catch(()=>({erro:"falha"}));
+    if(ctl.signal.aborted) return;
+    if(!resp.ok||res.erro) return photoMsg(lastUrl,"Não foi possível analisar a foto",`<small>${esc(ERR_FOTO[res.erro]||"Houve uma falha na análise. Tente de novo ou digite o nome do resíduo.")}</small>`,[]);
+    const id=String(res.id||"nenhum"); const conf=["alta","media","baixa"].includes(res.confianca)?res.confianca:"baixa";
+    const alts=(Array.isArray(res.alternativas)?res.alternativas:[]).map(String).filter(x=>byId[x]&&x!==id).slice(0,2);
+    const it=byId[id];
+    if(it&&conf!=="baixa"){ showItem(it,true,photoBanner(lastUrl,res,conf)); }
+    else{
+      const chips=[it,...alts.map(x=>byId[x])].filter(Boolean).slice(0,3);
+      const body=`<small>O que vi na foto</small><b>${esc(res.objeto||"Não consegui identificar")}</b>
+        <small>${esc(res.pergunta||"Tente uma foto mais próxima, com boa luz e um objeto por vez.")}</small>`;
+      photoMsg(lastUrl,chips.length?"É algum destes?":"Não reconheci com segurança",body,chips,chips.length?"":`<p style="margin:0">Sem certeza, o LIMPA! não chuta. Digite o nome ou pergunte à Central 156:</p>${fallbackHtml()}`);
+    }
+  }catch(err){
+    if(ctl.signal.aborted&&err&&err.name==="AbortError") return photoMsg(lastUrl,"Análise interrompida","<small>Cancelada ou demorou mais de 15 s. Nada foi salvo.</small>",[]);
+    photoMsg(lastUrl,"Não foi possível analisar a foto",`<small>${ERR_FOTO.rede}</small>`,[]);
+  }
+});
+
+/* =====================================================================
+   CÓDIGO DE BARRAS — "desrotular" a embalagem (ideia do Desrotulando)
+   Câmera ao vivo com BarcodeDetector (Chrome Android) ou ZXing (reserva).
+   O código é consultado no Open Food Facts (base aberta e colaborativa),
+   que informa o material de cada parte da embalagem. O destino de cada
+   parte vem sempre da base LIMPA!/DMLU, nunca de fora.
+   ===================================================================== */
+let scanStream=null, scanLoop=null, zxReader=null, scanning=false;
+function loadScript(src){return new Promise((ok,ko)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=ko;document.head.appendChild(s)})}
+async function openScanner(){
+  $("#scan").hidden=false; $("#scanCode").value=""; $("#scanMsg").textContent="Iniciando a câmera…"; scanning=true;
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.isSecureContext){
+    $("#scanMsg").textContent="A câmera ao vivo precisa do link https. Digite os números do código abaixo."; return;
+  }
+  try{
+    scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}},audio:false});
+  }catch(e){
+    $("#scanMsg").textContent=e&&e.name==="NotAllowedError"?"Permissão da câmera negada. Libere nas configurações do Chrome ou digite o código.":"Não consegui abrir a câmera. Digite os números do código abaixo.";
+    return;
+  }
+  if(!scanning){stopScanner();return}
+  const v=$("#scanVideo"); v.srcObject=scanStream; try{await v.play()}catch(e){}
+  $("#scanMsg").textContent="Centralize o código de barras na moldura";
+  let ok=false;
+  if("BarcodeDetector" in window){
+    try{
+      const fm=await BarcodeDetector.getSupportedFormats();
+      const want=["ean_13","ean_8","upc_a","upc_e"].filter(x=>fm.includes(x));
+      if(want.length){
+        const det=new BarcodeDetector({formats:want}); ok=true;
+        const tick=async()=>{
+          if(!scanning) return;
+          try{const r=await det.detect(v); if(r&&r[0]&&r[0].rawValue){return found(r[0].rawValue)}}catch(e){}
+          scanLoop=setTimeout(tick,250);
+        };
+        tick();
+      }
+    }catch(e){}
+  }
+  if(!ok){
+    try{
+      if(!window.ZXing) await loadScript("https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js");
+      const hints=new Map(); hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,ZXing.BarcodeFormat.UPC_A,ZXing.BarcodeFormat.UPC_E]);
+      zxReader=new ZXing.BrowserMultiFormatReader(hints);
+      zxReader.decodeFromStream(scanStream,v,(res)=>{ if(res&&scanning) found(res.getText()); });
+    }catch(e){ $("#scanMsg").textContent="Leitura automática indisponível neste aparelho. Digite os números do código abaixo."; }
+  }
+}
+function stopScanner(){
+  scanning=false; clearTimeout(scanLoop);
+  try{zxReader&&zxReader.reset()}catch(e){} zxReader=null;
+  if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}
+  const v=$("#scanVideo"); v.srcObject=null; $("#scan").hidden=true;
+}
+function found(code){ if(!scanning) return; try{navigator.vibrate&&navigator.vibrate(80)}catch(e){} stopScanner(); lookupBarcode(code,null); }
+$("#scanBtn").addEventListener("click",openScanner);
+$("#scanClose").addEventListener("click",stopScanner);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#scan").hidden) stopScanner()});
+$("#scanForm").addEventListener("submit",e=>{e.preventDefault();const c=$("#scanCode").value.replace(/\D/g,"");if(c.length<8){$("#scanMsg").textContent="O código tem de 8 a 14 números.";return}stopScanner();lookupBarcode(c,null)});
+
+const OFF_BASES=["https://world.openfoodfacts.org","https://world.openbeautyfacts.org","https://world.openproductsfacts.org"];
+const OFF_FIELDS="product_name,product_name_pt,generic_name_pt,brands,packagings,packaging_tags,packaging_materials_tags,packaging_shapes_tags,image_front_small_url,categories_tags";
+async function fetchProduto(code){
+  for(const base of OFF_BASES){
+    const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),8000);
+    try{
+      const r=await fetch(`${base}/api/v2/product/${encodeURIComponent(code)}.json?fields=${OFF_FIELDS}`,{signal:ctl.signal});
+      if(r.ok){const j=await r.json(); if(j&&j.status===1&&j.product) return {p:j.product,base};}
+    }catch(e){ if(base===OFF_BASES[0]) {clearTimeout(t); throw e;} }
+    finally{clearTimeout(t)}
+  }
+  return null;
+}
+const SHAPE_PT={bottle:"Garrafa",can:"Lata",jar:"Pote",pot:"Pote",tub:"Pote",box:"Caixa",lid:"Tampa",cap:"Tampa","bottle-cap":"Tampa",seal:"Lacre",
+  bag:"Saco",film:"Filme plástico",tray:"Bandeja",label:"Rótulo",wrapper:"Embalagem",sachet:"Sachê",brick:"Caixinha",capsule:"Cápsula",cup:"Copo",
+  "bag-in-box":"Caixa com saco",pouch:"Pouch",packet:"Pacote",envelope:"Envelope",carton:"Caixa",sleeve:"Cinta",tube:"Bisnaga",blister:"Blister",
+  "drink-carton":"Caixinha",container:"Recipiente",cork:"Rolha",spout:"Bico",straw:"Canudo",net:"Rede",wrap:"Embalagem",individual:"Embalagem individual"};
+const slug=t=>String(t||"").replace(/^[a-z]{2}:/,"").toLowerCase();
+function matPT(m){
+  const s=slug(m);
+  const tab=[[/pet|polyethylene-terephthalate/,"PET"],[/glass/,"Vidro"],[/alumin/,"Alumínio"],[/steel|tin/,"Aço"],[/beverage-carton|tetra|multilayer-composite|liquid-packaging-board|drink-carton/,"Longa vida"],
+    [/corrugated|cardboard|carton|paperboard/,"Papelão"],[/paper/,"Papel"],[/expanded-polystyrene|eps/,"Isopor (EPS)"],[/polystyrene|^ps|6-ps/,"Poliestireno (PS)"],[/hdpe|high-density/,"PEAD"],
+    [/ldpe|low-density/,"PEBD"],[/polypropylene|^pp|5-pp/,"Polipropileno (PP)"],[/pvc/,"PVC"],[/metallized|metallised/,"Plástico metalizado"],[/wood/,"Madeira"],[/plastic/,"Plástico"],[/metal/,"Metal"]];
+  for(const [re,l] of tab) if(re.test(s)) return l;
+  return s?s.replace(/-/g," "):"Material não informado";
+}
+// Material + formato → item da base LIMPA! (o destino sempre vem da base)
+function mapPart(material,shape){
+  const m=slug(material), sh=slug(shape);
+  const isLid=/lid|cap|seal|cork/.test(sh);
+  if(/capsule/.test(sh)) return "capsula";
+  if(/glass/.test(m)) return isLid?"tampinha":"vidro";
+  if(/alumin/.test(m)) return isLid?"tampinha":(/can/.test(sh)?"lata":"aluminio");
+  if(/steel|tin|^metal|-metal/.test(m)) return isLid?"tampinha":"conserva";
+  if(/beverage-carton|tetra|multilayer|liquid-packaging-board|drink-carton/.test(m)||/brick|drink-carton/.test(sh)) return "longavida";
+  if(/expanded-polystyrene|\beps\b/.test(m)) return "isopor";
+  if(/polystyrene|6-ps/.test(m)) return /tray/.test(sh)?"isopor":(/cup/.test(sh)?"copo":"pote");
+  if(/metallized|metallised/.test(m)) return "salgadinho";
+  if(/corrugated|cardboard|carton|paperboard/.test(m)) return "papelao";
+  if(/paper/.test(m)) return /cup/.test(sh)?null:"papel"; // copo de papel tem plástico por dentro: sem regra segura na base
+  if(/pet|polyethylene-terephthalate/.test(m)) return /bottle/.test(sh)?"pet":"pote";
+  if(/plastic|hdpe|ldpe|polyethylene|polypropylene|pp|pvc|bioplastic/.test(m)){
+    if(/bag|film|wrap|sachet|packet|pouch|net/.test(sh)) return /packet|wrapper|sachet/.test(sh)?"salgadinho":"sacola";
+    if(/cup/.test(sh)) return "copo";
+    return "pote";
+  }
+  if(!m){ // sem material: só o formato
+    if(/can/.test(sh)) return "lata";
+    if(/brick|drink-carton/.test(sh)) return "longavida";
+  }
+  return null;
+}
+function partesDoProduto(p){
+  const out=[];
+  const list=Array.isArray(p.packagings)?p.packagings:[];
+  for(const pk of list){
+    const mat=pk.material||"", sh=pk.shape||"";
+    out.push({forma:SHAPE_PT[slug(sh)]||(slug(sh)?slug(sh).replace(/-/g," "):"Parte da embalagem"),mat:matPT(mat),id:mapPart(mat,sh)});
+  }
+  if(!out.length){
+    const mats=(p.packaging_materials_tags||[]);
+    const shapes=(p.packaging_shapes_tags||[]);
+    if(mats.length){ mats.forEach((m,i)=>out.push({forma:SHAPE_PT[slug(shapes[i])]||"Embalagem",mat:matPT(m),id:mapPart(m,shapes[i]||"")})); }
+    else{
+      const tags=p.packaging_tags||[];
+      const mt=tags.filter(t=>mapPart(t,"")); const st=tags.find(t=>SHAPE_PT[slug(t)]);
+      mt.forEach(m=>out.push({forma:st?SHAPE_PT[slug(st)]:"Embalagem",mat:matPT(m),id:mapPart(m,st||"")}));
+      if(!out.length&&st&&mapPart("",st)) out.push({forma:SHAPE_PT[slug(st)],mat:"Material não informado",id:mapPart("",st)});
+    }
+  }
+  const seen=new Set();
+  return out.filter(x=>{const k=x.forma+"|"+x.mat;if(seen.has(k))return false;seen.add(k);return true});
+}
+async function lookupBarcode(code,photoUrl){
+  goConsultar();
+  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">🏷️</div><div style="min-width:0"><h2>Desrotulando ${esc(code)}…</h2><span class="pill eco">Código de barras</span></div></div>
+    <div class="r-body"><div><span class="spin" aria-hidden="true"></span> Consultando a embalagem na base aberta Open Food Facts</div></div>`;
+  scrollToResult();
+  let r;
+  try{ r=await fetchProduto(code); }
+  catch(e){ return barcodeMsg(code,photoUrl,"Sem conexão para consultar o código","Confira a internet e tente de novo, ou escolha o tipo de embalagem abaixo.",null); }
+  if(!r) return barcodeMsg(code,photoUrl,"Produto ainda não cadastrado","Este código não está na base aberta. Escolha o tipo de embalagem abaixo ou fotografe o resíduo.",null);
+  const p=r.p;
+  const nome=p.product_name_pt||p.product_name||p.generic_name_pt||"Produto sem nome";
+  const marca=(p.brands||"").split(",")[0].trim();
+  const partes=partesDoProduto(p);
+  const conhecidas=partes.filter(x=>x.id&&byId[x.id]);
+  if(!conhecidas.length) return barcodeMsg(code,photoUrl,nome+(marca?` · ${marca}`:""),"Encontrei o produto, mas a embalagem ainda não tem o material informado. Escolha o tipo de embalagem abaixo:",r);
+  const linhas=partes.map(x=>{
+    const it=x.id&&byId[x.id];
+    if(!it) return `<div class="part" style="cursor:default"><i style="background:#ccc"></i><div><b>${esc(x.forma)} · ${esc(x.mat)}</b><small>Sem regra segura na base: confira pelo 156</small></div><span></span></div>`;
+    const cor=it.bin?BINS[it.bin].hex:(it.station||"#1D3B5C");
+    return `<button type="button" class="part" data-id="${esc(it.id)}"><i style="background:${cor}"></i><div><b>${esc(x.forma)} · ${esc(x.mat)}</b><small>${esc(destinoCurto(it))}</small></div><span class="go2">Ver ›</span></button>`;
+  }).join("");
+  const img=photoUrl||(/^https:\/\//.test(p.image_front_small_url||"")?p.image_front_small_url:"");
+  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">🏷️</div><div style="min-width:0"><h2>${esc(nome)}</h2><span class="pill sel">Embalagem desrotulada</span></div></div>
+    <div class="r-body">
+      <div class="ai">${img?`<img src="${esc(img)}" alt="">`:`<div class="ph" aria-hidden="true">📦</div>`}<div style="min-width:0"><small>Código ${esc(code)}</small><b>${esc(marca||"Marca não informada")}</b><small>${partes.length} parte${partes.length===1?"":"s"} da embalagem</small></div></div>
+      <div class="blk"><h3>${icoBox}Onde vai cada parte</h3><div class="parts">${linhas}</div></div>
+      <div class="know"><b>Separe antes de descartar</b>Esvazie e tire o excesso de comida. Partes recicláveis vão juntas no saco da Coleta Seletiva; toque numa parte para ver como preparar.</div>
+      <div class="r-actions"><button class="btn primary" type="button" id="scanAgain">Ler outro código</button><button class="btn ghost" type="button" id="photoAgain">Tirar foto</button></div>
+      <div class="src">Embalagem: <a href="${r.base}/product/${encodeURIComponent(code)}" target="_blank" rel="noopener">Open Food Facts</a> (base aberta e colaborativa, pode ter erros). Destino: base LIMPA! com fontes do DMLU, consultada em ${DATA_RES}. Na dúvida, vale a Central 156.</div>
+    </div>`;
+  $("#scanAgain").addEventListener("click",openScanner);
+  $("#photoAgain").addEventListener("click",()=>$("#cam").click());
+}
+function barcodeMsg(code,photoUrl,title,txt,r){
+  const chips=["pet","pote","lata","vidro","longavida","papelao","salgadinho","isopor"].map(i=>byId[i]).filter(Boolean);
+  const link=r?`<a href="${r.base}/product/${encodeURIComponent(code)}" target="_blank" rel="noopener">Ver no Open Food Facts</a>`:`<a href="https://world.openfoodfacts.org/cgi/product.pl?code=${encodeURIComponent(code)}" target="_blank" rel="noopener">Cadastrar no Open Food Facts</a>`;
+  $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">🏷️</div><div style="min-width:0"><h2>${esc(title)}</h2><span class="pill eco">Código ${esc(code)}</span></div></div>
+    <div class="r-body">
+      ${photoUrl?`<div class="ai"><img src="${photoUrl}" alt="Sua foto"><div><small>Código lido na sua foto</small><b>${esc(code)}</b></div></div>`:""}
+      <p style="margin:0">${esc(txt)}</p>
+      ${chipsHtml(chips)}
+      <div class="r-actions"><button class="btn primary" type="button" id="scanAgain">Ler outro código</button><button class="btn ghost" type="button" id="photoAgain">Tirar foto</button></div>
+      <div class="src">Embalagem: ${link} (base aberta e colaborativa). Sem regra segura, o LIMPA! não chuta: na dúvida, Central 156.</div>
+    </div>`;
+  $("#scanAgain").addEventListener("click",openScanner);
+  $("#photoAgain").addEventListener("click",()=>$("#cam").click());
+}
+
+/* ---------- Compartilhar (link + QR Code) ---------- */
+const shareUrl=location.href.split("#")[0];
+$("#shareUrl").textContent=shareUrl;
+$("#shareBtn").addEventListener("click",async()=>{
+  const data={title:"LIMPA!",text:"Teste o LIMPA!, a IA de descarte correto de Porto Alegre:",url:shareUrl};
+  try{ if(navigator.share){await navigator.share(data);return} }catch(e){return}
+  try{await navigator.clipboard.writeText(shareUrl);toast("<b>Link copiado</b><br>Cole no WhatsApp para compartilhar.")}catch(e){toast("Copie o link acima.")}
+});
+$("#qrBtn").addEventListener("click",async()=>{
+  const box=$("#qr");
+  if(!box.hidden){box.hidden=true;$("#qrBtn").textContent="Mostrar QR Code";return}
+  try{
+    if(!window.qrcode) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js");
+    const qr=qrcode(0,"M"); qr.addData(shareUrl); qr.make();
+    box.innerHTML=qr.createSvgTag({cellSize:5,margin:2,scalable:true}); box.hidden=false; $("#qrBtn").textContent="Esconder QR Code";
+  }catch(e){toast("Não consegui gerar o QR Code agora.")}
+});
+
+/* ---------- Aviso para navegador interno de apps ---------- */
+if(/FBAN|FBAV|Instagram|Line\/|; wv\)/i.test(navigator.userAgent)) $("#inApp").hidden=false;
+
+/* ---------- Início: carrega a base (JSON) ---------- */
+async function carregarJSON(url){const r=await fetch(url,{cache:"no-cache"});if(!r.ok) throw new Error(url+" "+r.status);return r.json()}
+async function init(){
+  renderScore(); route();
+  try{
+    const [res,eco]=await Promise.all([carregarJSON("data/residuos.json"),carregarJSON("data/ecopontos.json")]);
+    ITEMS=res.itens||[]; ITEMS.forEach(it=>{it._k=norm(it.n+" "+(it.s||""))});
+    byId=Object.fromEntries(ITEMS.map(i=>[i.id,i]));
+    ECO=eco.ecopontos||[]; LIM=eco.limites||{};
+    DATA_RES=fmtData(res.consultado_em); DATA_ECO=fmtData(eco.consultado_em);
+    document.querySelectorAll(".dataRes").forEach(x=>x.textContent=DATA_RES);
+    document.querySelectorAll(".dataEco").forEach(x=>x.textContent=DATA_ECO);
+  }catch(e){
+    $("#result").innerHTML=`<div class="r-head"><div class="r-emoji" aria-hidden="true">⚠️</div><div style="min-width:0"><h2>Não consegui carregar a base de resíduos</h2><span class="pill eco">Erro de carregamento</span></div></div>
+      <div class="r-body"><p style="margin:0">Confira a internet e recarregue a página. Se abriu o arquivo direto do computador, use o link publicado ou o servidor local (veja o README).</p>
+      <div class="r-actions"><button class="btn primary" type="button" onclick="location.reload()">Tentar de novo</button></div>${fallbackHtml()}</div>`;
+    return;
+  }
+  const QUICK=["filtro","pizzasuja","pilha","oleo","sofa","isopor","lampada","remedio","celular","erva","entulho","vidroquebrado"].filter(id=>byId[id]);
+  $("#quick").innerHTML=QUICK.map(id=>`<button type="button" data-id="${id}">${esc(byId[id].e)} ${esc(byId[id].n.replace(/ \(.*\)/,""))}</button>`).join("");
+  $("#quick").addEventListener("click",e=>{const b=e.target.closest("button[data-id]");if(b)pick(byId[b.dataset.id])});
+  $("#catCount").textContent=`${ITEMS.length} resíduos na base`;
+  renderLimites(); renderEco(); renderQuiz();
+  if(byId.filtro) showItem(byId.filtro,false);
+  checarIA();
+  setInterval(()=>{ if(!$("#v-ecopontos").hidden) renderEco(); },60000);
+}
+init();
+})();
+</script>
+</body>
+</html>

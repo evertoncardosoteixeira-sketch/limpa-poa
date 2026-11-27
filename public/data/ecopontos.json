@@ -1,0 +1,157 @@
+{
+ "consultado_em": "2026-11-25",
+ "fonte": "https://prefeitura.poa.br/dmlu/projetos/destino-certo-ecopontos",
+ "legenda": {
+  "wk": "seg-sex [abre,fecha] em horas",
+  "sa": "sábados e feriados",
+  "ele": "tem PERE (eletrônicos)",
+  "gesso": "recebe gesso",
+  "closed": "fechado para reforma"
+ },
+ "limites": {
+  "volumosos_m3_dia": 1,
+  "entulho_m3_dia": 0.5,
+  "poda_m3_dia": 1,
+  "gesso_m3": 1,
+  "pneus_por_dia": 4
+ },
+ "ecopontos": [
+  {
+   "n": "Ecoponto Centro",
+   "a": "Av. Alberto Bins, 667",
+   "b": "Centro Histórico",
+   "wk": [
+    7,
+    19
+   ],
+   "sa": [
+    8,
+    12
+   ],
+   "ele": 1,
+   "gesso": 1,
+   "hint": "Mais perto do Centro Histórico"
+  },
+  {
+   "n": "Ecoponto Câncio Gomes",
+   "a": "Travessa Carmem, 111",
+   "b": "Floresta",
+   "wk": [
+    7,
+    19
+   ],
+   "sa": [
+    8,
+    12
+   ],
+   "ele": 1,
+   "gesso": 1
+  },
+  {
+   "n": "Ecoponto Princesa Isabel",
+   "a": "Av. Ipiranga, 2765 (entrada pela Rua Livramento)",
+   "b": "Santana",
+   "wk": [
+    7,
+    19
+   ],
+   "sa": [
+    8,
+    12
+   ],
+   "ele": 1,
+   "gesso": 1
+  },
+  {
+   "n": "Ecoponto Carvalho de Freitas",
+   "a": "Rua Professor Carvalho de Freitas, 1.012",
+   "b": "Glória",
+   "wk": [
+    7,
+    19
+   ],
+   "sa": [
+    8,
+    12
+   ],
+   "ele": 1,
+   "gesso": 1
+  },
+  {
+   "n": "Ecoponto Cruzeiro do Sul",
+   "a": "Av. Cruzeiro do Sul, 1.445",
+   "b": "Santa Tereza",
+   "wk": [
+    8,
+    17
+   ],
+   "sa": [
+    8,
+    12
+   ],
+   "ele": 1,
+   "gesso": 0
+  },
+  {
+   "n": "Ecoponto Humaitá",
+   "a": "Rua José Aloísio Filho, 780",
+   "b": "Humaitá",
+   "wk": [
+    8,
+    16
+   ],
+   "sa": [
+    8,
+    12
+   ],
+   "ele": 1,
+   "gesso": 1
+  },
+  {
+   "n": "Ecoponto Aterro Norte",
+   "a": "Rua Sérgio Jungblut Dieterich, 1.201",
+   "b": "Sarandi",
+   "wk": [
+    7,
+    18
+   ],
+   "sa": [
+    7,
+    12
+   ],
+   "ele": 0,
+   "gesso": 1
+  },
+  {
+   "n": "Ecoponto Bernardino Silveira de Amorim",
+   "a": "Av. Bernardino Silveira de Amorim, 2.261",
+   "b": "Rubem Berta",
+   "wk": [
+    8,
+    17
+   ],
+   "sa": [
+    8,
+    12
+   ],
+   "ele": 0,
+   "gesso": 0
+  },
+  {
+   "n": "Ecoponto Fátima Pinto",
+   "a": "Rua Alfredo Ferreira Rodrigues, 975",
+   "b": "Bom Jesus",
+   "wk": [
+    8,
+    17
+   ],
+   "sa": [
+    8,
+    12
+   ],
+   "ele": 0,
+   "gesso": 0,
+   "closed": 1
+  }
+ ]
+}

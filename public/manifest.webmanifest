@@ -1,0 +1,16 @@
+{
+  "name": "LIMPA! Sua IA para educação ambiental",
+  "short_name": "LIMPA!",
+  "description": "Onde e como descartar cada resíduo em Porto Alegre. Projeto Limpa POA.",
+  "lang": "pt-BR",
+  "start_url": "./#consultar",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F6F8F5",
+  "theme_color": "#13573F",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
